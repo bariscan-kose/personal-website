@@ -161,16 +161,6 @@ typeRole();
     }
   }
 
-  function drawCursorGlow() {
-    const g = ctx.createRadialGradient(smoothed.x, smoothed.y, 0, smoothed.x, smoothed.y, 240);
-    g.addColorStop(0, 'rgba(0,212,255,0.08)');
-    g.addColorStop(1, 'rgba(0,212,255,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.arc(smoothed.x, smoothed.y, 240, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
   function loop() {
     tick++;
 
@@ -181,7 +171,6 @@ typeRole();
     ctx.fillStyle = 'rgba(5,10,20,0.2)';
     ctx.fillRect(0, 0, W, H);
 
-    drawCursorGlow();
     particles.forEach(p => { p.update(tick); p.draw(tick); });
     drawConnections();
 
