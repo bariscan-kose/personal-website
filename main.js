@@ -67,47 +67,69 @@ typeRole();
 (function initHeroCanvas() {
   const canvas = document.getElementById('heroCanvas');
   const ctx    = canvas.getContext('2d');
-  let W, H, particles, mouse = { x: -9999, y: -9999 };
+  let W, H, particles;
+  let target   = { x: 0, y: 0 };
+  let smoothed = { x: 0, y: 0 };
+  let hasMouse = false;
+  let tick     = 0;
 
-  const N   = 90;
-  const MAX = 160;
+  const N         = 120;
+  const MAX_DIST  = 180;
+  const ATTRACT_R = 300;
 
   function resize() {
     W = canvas.width  = canvas.offsetWidth;
     H = canvas.height = canvas.offsetHeight;
+    if (!hasMouse) { target.x = smoothed.x = W / 2; target.y = smoothed.y = H / 2; }
   }
 
   class Particle {
-    constructor() { this.reset(true); }
-    reset(initial) {
-      this.x  = Math.random() * W;
-      this.y  = Math.random() * H;
-      this.vx = (Math.random() - 0.5) * 0.6;
-      this.vy = (Math.random() - 0.5) * 0.6;
-      this.r  = Math.random() * 2 + 1;
-      this.hue = Math.random() < 0.7 ? 190 : 270; // cyan or purple
+    constructor() { this.init(); }
+    init() {
+      this.x     = Math.random() * W;
+      this.y     = Math.random() * H;
+      this.baseVx = (Math.random() - 0.5) * 0.5;
+      this.baseVy = (Math.random() - 0.5) * 0.5;
+      this.vx    = this.baseVx;
+      this.vy    = this.baseVy;
+      this.r     = Math.random() * 1.8 + 0.8;
+      this.hue   = Math.random() < 0.65 ? 185 + Math.random() * 25 : 258 + Math.random() * 22;
+      this.phase = Math.random() * Math.PI * 2;
+      this.speed = 0.4 + Math.random() * 0.7;
     }
-    update() {
-      const dx = this.x - mouse.x, dy = this.y - mouse.y;
+    update(t) {
+      // Organic sine-wave drift — always moving even without cursor
+      this.vx = this.baseVx + Math.cos(t * 0.0006 + this.phase) * 0.4 * this.speed;
+      this.vy = this.baseVy + Math.sin(t * 0.0008 + this.phase * 1.3) * 0.4 * this.speed;
+
+      // Gentle attraction toward smoothed cursor
+      const dx   = smoothed.x - this.x;
+      const dy   = smoothed.y - this.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 120) {
-        const force = (120 - dist) / 120 * 0.8;
-        this.vx += (dx / dist) * force * 0.15;
-        this.vy += (dy / dist) * force * 0.15;
+      if (dist < ATTRACT_R && dist > 1) {
+        const str = (1 - dist / ATTRACT_R) * 0.022 * this.speed;
+        this.vx  += (dx / dist) * str;
+        this.vy  += (dy / dist) * str;
       }
-      this.vx *= 0.99;
-      this.vy *= 0.99;
+
+      // Speed cap
+      const spd = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+      if (spd > 2.4) { this.vx = this.vx / spd * 2.4; this.vy = this.vy / spd * 2.4; }
+
       this.x += this.vx;
       this.y += this.vy;
-      if (this.x < 0) { this.x = 0; this.vx *= -1; }
-      if (this.x > W) { this.x = W; this.vx *= -1; }
-      if (this.y < 0) { this.y = 0; this.vy *= -1; }
-      if (this.y > H) { this.y = H; this.vy *= -1; }
+
+      // Wrap edges
+      if (this.x < -10) this.x = W + 10;
+      if (this.x > W + 10) this.x = -10;
+      if (this.y < -10) this.y = H + 10;
+      if (this.y > H + 10) this.y = -10;
     }
-    draw() {
+    draw(t) {
+      const pulse = 0.75 + 0.25 * Math.sin(t * 0.0018 + this.phase);
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${this.hue},100%,70%,0.85)`;
+      ctx.arc(this.x, this.y, this.r * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${this.hue},100%,72%,${0.55 + 0.4 * pulse})`;
       ctx.fill();
     }
   }
@@ -123,8 +145,8 @@ typeRole();
         const dx = particles[i].x - particles[j].x;
         const dy = particles[i].y - particles[j].y;
         const d  = Math.sqrt(dx * dx + dy * dy);
-        if (d < MAX) {
-          const alpha = (1 - d / MAX) * 0.45;
+        if (d < MAX_DIST) {
+          const alpha = (1 - d / MAX_DIST) * 0.55;
           const grad  = ctx.createLinearGradient(particles[i].x, particles[i].y, particles[j].x, particles[j].y);
           grad.addColorStop(0, `hsla(${particles[i].hue},100%,65%,${alpha})`);
           grad.addColorStop(1, `hsla(${particles[j].hue},100%,65%,${alpha})`);
@@ -132,28 +154,57 @@ typeRole();
           ctx.moveTo(particles[i].x, particles[i].y);
           ctx.lineTo(particles[j].x, particles[j].y);
           ctx.strokeStyle = grad;
-          ctx.lineWidth   = 1;
+          ctx.lineWidth   = alpha * 1.6;
           ctx.stroke();
         }
       }
     }
   }
 
+  function drawCursorGlow() {
+    const g = ctx.createRadialGradient(smoothed.x, smoothed.y, 0, smoothed.x, smoothed.y, 240);
+    g.addColorStop(0, 'rgba(0,212,255,0.08)');
+    g.addColorStop(1, 'rgba(0,212,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(smoothed.x, smoothed.y, 240, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
   function loop() {
-    ctx.fillStyle = 'rgba(5,10,20,0.18)';
+    tick++;
+
+    // Lazy cursor follow
+    smoothed.x += (target.x - smoothed.x) * 0.045;
+    smoothed.y += (target.y - smoothed.y) * 0.045;
+
+    ctx.fillStyle = 'rgba(5,10,20,0.2)';
     ctx.fillRect(0, 0, W, H);
-    particles.forEach(p => { p.update(); p.draw(); });
+
+    drawCursorGlow();
+    particles.forEach(p => { p.update(tick); p.draw(tick); });
     drawConnections();
+
     requestAnimationFrame(loop);
   }
 
-  window.addEventListener('resize', () => { resize(); particles.forEach(p => p.reset()); });
-  canvas.addEventListener('mousemove', e => {
-    const rect = canvas.getBoundingClientRect();
-    mouse.x = e.clientX - rect.left;
-    mouse.y = e.clientY - rect.top;
+  window.addEventListener('resize', resize);
+
+  // Track cursor anywhere on the page
+  window.addEventListener('mousemove', e => {
+    hasMouse  = true;
+    target.x  = e.clientX;
+    target.y  = e.clientY + window.scrollY - canvas.getBoundingClientRect().top - window.scrollY;
   });
-  canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  // When no cursor: slowly orbit around centre so it's always alive
+  setInterval(() => {
+    if (!hasMouse) {
+      const t  = Date.now() * 0.00035;
+      target.x = W / 2 + Math.cos(t) * W * 0.28;
+      target.y = H / 2 + Math.sin(t * 0.6) * H * 0.22;
+    }
+  }, 16);
 
   init();
   loop();
