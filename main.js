@@ -561,7 +561,7 @@ showQuote(0);
         totalEl.textContent = totalPages;
         pauseIcon.style.display = 'block';
         playIcon.style.display  = 'none';
-        renderPage(1);
+        renderPage(Math.floor(Math.random() * totalPages) + 1);
         scheduleNext();
       }).catch(err => {
         loadingEl.innerHTML = '<p style="color:#ef4444;padding:24px;">Could not load encyclopedia.pdf — ensure the file is in the project root.</p>';
