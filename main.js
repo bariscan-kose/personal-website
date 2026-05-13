@@ -399,7 +399,6 @@ const quotes = [
   { text: "Beauty awakens the soul to act.", author: "Dante Alighieri", cat: "Literature" },
   { text: "Gradatim ferociter.", author: "Latin", cat: "Step by step, ferociously." },
   { text: "Ostinati Rigore.", author: "Leonardo da Vinci", cat: "Rigorous persistence." },
-  { text: "As space, so matter. As mind, so life.", author: "Bariscan Kose", cat: "Original" },
   { text: "You fear your own power, you fear your anger, the drive to do great or terrible things.", author: "Ra's Al Ghul", cat: "Batman Begins" },
   { text: "He who can, does not want to. He who wants to, cannot. He who knows, does not do. He who does, does not know. And thus the world goes badly.", author: "Ascoli Piceno, 1529", cat: "Italian Inscription" },
   { text: "We are built for romance and adventure, not for comfort. You are going to find the meaning of your life in adventure. Do what is right and see what happens.", author: "Jordan B. Peterson", cat: "Philosophy" },
