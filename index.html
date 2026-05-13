@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bariscan Kose — Software Engineer</title>
+  <meta name="description" content="Full-Stack Software Engineer, Embedded Systems & ML enthusiast based in Toronto, Canada.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ───────────────────────── NAV ───────────────────────── -->
+  <nav id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">BK</a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#art">Creative Code</a></li>
+        <li><a href="#markets">Markets</a></li>
+        <li><a href="#encyclopedia">Encyclopedia</a></li>
+        <li><a href="#quotes">Wisdom</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ───────────────────────── HERO ───────────────────────── -->
+  <section id="hero">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-photo-wrapper">
+        <div class="hero-photo-ring"></div>
+        <img src="profile.jpg" alt="Bariscan Kose" class="hero-photo">
+        <div class="hero-photo-glow"></div>
+      </div>
+      <div class="hero-text">
+        <p class="hero-greeting">Hello, I'm</p>
+        <h1 class="hero-name">Bariscan Kose</h1>
+        <div class="hero-roles">
+          <span id="roleText">Full-Stack Engineer</span>
+          <span class="cursor-blink">|</span>
+        </div>
+        <p class="hero-location">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Toronto, Canada
+        </p>
+        <div class="hero-links">
+          <a href="https://github.com/bariscan-kose" target="_blank" rel="noopener" class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.933.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.165 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+            GitHub
+          </a>
+          <a href="https://linkedin.com/in/bariscan-kose" target="_blank" rel="noopener" class="btn btn-outline">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:bariscan@alumni.sabanciuniv.edu" class="btn btn-primary">Get In Touch</a>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-dot"></div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── ABOUT ───────────────────────── -->
+  <section id="about" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">About Me</h2>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p>I'm a software engineer with roots in electronics — I studied at <strong>Sabanci University</strong> in Istanbul, then completed an <strong>IoT &amp; Machine Intelligence</strong> graduate program at <strong>Sheridan College</strong> in Toronto. That combination gives me an unusual depth: I'm as comfortable designing firmware in C as I am building cloud microservices in Java or training neural networks in Python.</p>
+          <p>At <strong>Electric Mind</strong>, I led generative AI initiatives, built full-stack products, and architected data pipelines. Before that I wrote firmware for WiFi extenders at <strong>Airties</strong> and optimised data infrastructure as a remote data scientist at <strong>Turing</strong>.</p>
+          <p>Outside work I study markets, read voraciously, and build side projects that live at the intersection of software and the physical world. I believe technology should create genuine value — for people and for the planet.</p>
+        </div>
+        <div class="about-stats reveal">
+          <div class="stat-card">
+            <span class="stat-number" data-target="5">0</span>+
+            <span class="stat-label">Years Experience</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="15">0</span>+
+            <span class="stat-label">Technologies</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="3">0</span>
+            <span class="stat-label">Countries Worked</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="362">0</span>
+            <span class="stat-label">Encyclopedia Pages</span>
+          </div>
+        </div>
+      </div>
+      <!-- Skills -->
+      <div class="skills-section reveal">
+        <h3 class="subsection-title">Technical Arsenal</h3>
+        <div class="skill-categories">
+          <div class="skill-group">
+            <h4>Languages</h4>
+            <div class="skill-tags">
+              <span class="tag">Python</span><span class="tag">Java</span><span class="tag">C/C++</span>
+              <span class="tag">JavaScript</span><span class="tag">TypeScript</span><span class="tag">SQL</span>
+              <span class="tag">MATLAB</span><span class="tag">Verilog</span><span class="tag">Assembly</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Frameworks &amp; Cloud</h4>
+            <div class="skill-tags">
+              <span class="tag">Spring Boot</span><span class="tag">React</span><span class="tag">Django</span>
+              <span class="tag">PyTorch</span><span class="tag">TensorFlow</span><span class="tag">AWS</span>
+              <span class="tag">Azure AI</span><span class="tag">Docker</span><span class="tag">GraphQL</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Embedded &amp; Hardware</h4>
+            <div class="skill-tags">
+              <span class="tag">RTOS</span><span class="tag">Linux</span><span class="tag">ESP32</span>
+              <span class="tag">ARM Cortex</span><span class="tag">FPGA</span><span class="tag">PIC</span>
+              <span class="tag">TCP/IP</span><span class="tag">I2C / SPI / UART</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── EXPERIENCE ───────────────────────── -->
+  <section id="experience" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title reveal">Experience</h2>
+      <div class="timeline">
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">May 2024 – Jan 2026</div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3>Full-Stack Software Developer</h3>
+              <span class="timeline-company">Electric Mind · Toronto, Canada</span>
+            </div>
+            <ul class="timeline-bullets">
+              <li>Built backend microservices for fleet management replatforming with Java, Spring Boot, GraphQL, and AWS (Lambda, CloudFormation, CodePipeline).</li>
+              <li>Designed SQL Server databases for brokerage master-data management; built full-stack apps with Django, HTMX, Tailwind, and React.</li>
+              <li>Delivered Salesforce solutions using Apex, LWC, and JavaScript; integrated Twilio recordings with OpenAI for automatic call summarisation.</li>
+              <li>Single-handedly architected a generative AI transaction search system and AI voice-agent platform using Azure AI Foundry, BlandAI, Flask, and React.</li>
+            </ul>
+            <div class="timeline-tags"><span>Java</span><span>Spring Boot</span><span>AWS</span><span>React</span><span>OpenAI</span><span>Azure AI</span></div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Mar 2023 – Aug 2023</div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3>Embedded Software Engineer</h3>
+              <span class="timeline-company">Airties · Istanbul, Turkey</span>
+            </div>
+            <ul class="timeline-bullets">
+              <li>Developed and refined firmware for WiFi extenders; enhanced AT&amp;T All-Fi Hub capabilities using Broadcom BSP, HALs, and cutting-edge networking protocols.</li>
+              <li>Resolved complex backtrace issues via GDB; managed dynamic shared libraries in Linux environments.</li>
+              <li>Presented progress updates to global partners across Asia, Europe, and North America.</li>
+            </ul>
+            <div class="timeline-tags"><span>C/C++</span><span>Linux</span><span>GDB</span><span>TCP/IP</span><span>Shell</span></div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Feb 2022 – Mar 2023</div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3>Data Scientist</h3>
+              <span class="timeline-company">Turing · California, USA (Remote)</span>
+            </div>
+            <ul class="timeline-bullets">
+              <li>Revolutionised query processes with Mode Analytics and SQL, supporting cross-functional teams of 20+ members with critical metric reporting.</li>
+              <li>Led third-party API integrations with Python, Poetry, Jenkins, and Docker; managed strategic data pipeline migrations.</li>
+            </ul>
+            <div class="timeline-tags"><span>Python</span><span>SQL</span><span>Docker</span><span>Jenkins</span></div>
+          </div>
+        </div>
+
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">Jun 2021 – Aug 2021</div>
+          <div class="timeline-card">
+            <div class="timeline-header">
+              <h3>ML &amp; Embedded Software Intern</h3>
+              <span class="timeline-company">Ideaktif Consultancy · Izmir, Turkey</span>
+            </div>
+            <ul class="timeline-bullets">
+              <li>Built an embedded SOS feature for hospital ID cards using ESP-32 and iBeacon-type beacons, improving emergency response times.</li>
+              <li>Developed a predictive sales model with TensorFlow analysing pricing, time, and market positioning.</li>
+            </ul>
+            <div class="timeline-tags"><span>ESP-32</span><span>TensorFlow</span><span>Python</span><span>C++</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── PROJECTS ───────────────────────── -->
+  <section id="projects" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">Selected Projects</h2>
+      <div class="projects-grid">
+
+        <div class="project-card reveal">
+          <div class="project-icon">🐝</div>
+          <h3>Remote Beehive Monitoring System</h3>
+          <p class="project-meta">Graduation Project · 2021–2022</p>
+          <p>IoT system using SHT-15 &amp; LM35 sensors, SIM808 GPRS/GSM module, and Arduino UNO to stream beehive health data to an AWS server globally — aimed at mitigating colony collapse disorder. Nominated for TUBITAK 1512 entrepreneurship programme.</p>
+          <div class="project-tags"><span>Arduino</span><span>AWS</span><span>IoT</span><span>GPRS</span></div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-icon">📈</div>
+          <h3>Ensemble ML Stock Prediction Pipeline</h3>
+          <p class="project-meta">Personal VPS Project · 2022</p>
+          <p>Sophisticated 3-tier ensemble on a VPS integrating CatBoost, LightGBM, and Deep Neural Networks with Local &amp; Parallel Folding. PostgreSQL data pipeline for continuous real-time US market data extraction and technical/fundamental analysis.</p>
+          <div class="project-tags"><span>Python</span><span>CatBoost</span><span>LightGBM</span><span>PostgreSQL</span><span>Linux</span></div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-icon">🌱</div>
+          <h3>Smart Irrigation System</h3>
+          <p class="project-meta">Sheridan College · 2023–2024</p>
+          <p>IoT irrigation solution using ESP-32 and moisture sensors with real-time soil monitoring. Acquired proficiency in FANUC robotics, PLC programming, and RTOS concepts on MPLAB X IDE with PIC24 microcontroller.</p>
+          <div class="project-tags"><span>ESP-32</span><span>RTOS</span><span>PLC</span><span>FANUC</span></div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-icon">🚨</div>
+          <h3>Embedded SOS for Hospital ID Cards</h3>
+          <p class="project-meta">Ideaktif · 2021</p>
+          <p>Innovative emergency feature for hospital ID cards using ESP-32 motherboards paired with iBeacon-type Bluetooth beacons. Significantly improved response times for critical patient events.</p>
+          <div class="project-tags"><span>ESP-32</span><span>Bluetooth</span><span>C++</span><span>iBeacon</span></div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-icon">🛒</div>
+          <h3>E-Commerce Platform</h3>
+          <p class="project-meta">University Team Project · 2021</p>
+          <p>Led front-end development for a full-stack e-commerce web and mobile platform within a six-member Scrum team. Delivered a responsive, intuitive UI using ReactJS and Redux.</p>
+          <div class="project-tags"><span>React</span><span>Redux</span><span>JavaScript</span><span>CSS</span></div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-icon">🤖</div>
+          <h3>AI Voice Agent Platform</h3>
+          <p class="project-meta">Electric Mind · 2025</p>
+          <p>Single-handedly designed a generative AI transaction search system with ML model comparisons, and built AI voice agents for operational automation using Azure AI Foundry, BlandAI, Plaid, Flask, and React.</p>
+          <div class="project-tags"><span>Azure AI</span><span>BlandAI</span><span>Flask</span><span>React</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── SOFTWARE ART ───────────────────────── -->
+  <section id="art" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title reveal">Creative Code</h2>
+      <p class="section-subtitle reveal">Mathematics made visible — three generative art pieces rendered live in your browser.</p>
+      <div class="art-grid">
+        <div class="art-card reveal">
+          <canvas id="artCanvas1"></canvas>
+          <div class="art-label">Neural Web · <em>Interactive — move your mouse</em></div>
+        </div>
+        <div class="art-card reveal">
+          <canvas id="artCanvas2"></canvas>
+          <div class="art-label">Lorenz Attractor · <em>Deterministic chaos</em></div>
+        </div>
+        <div class="art-card reveal">
+          <canvas id="artCanvas3"></canvas>
+          <div class="art-label">Wave Interference · <em>Superposition principle</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── MARKETS ───────────────────────── -->
+  <section id="markets" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">Understanding Markets</h2>
+      <p class="section-subtitle reveal">Financial markets are one of humanity's most complex information systems. Here's what every informed participant should know.</p>
+
+      <!-- TradingView Widget -->
+      <div class="tradingview-wrapper reveal">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+          {
+            "colorTheme": "dark",
+            "dateRange": "12M",
+            "showChart": true,
+            "locale": "en",
+            "width": "100%",
+            "height": "450",
+            "largeChartUrl": "",
+            "isTransparent": true,
+            "showSymbolLogo": true,
+            "showFloatingTooltip": false,
+            "plotLineColorGrowing": "rgba(0, 212, 255, 1)",
+            "plotLineColorFalling": "rgba(239, 68, 68, 1)",
+            "gridLineColor": "rgba(255, 255, 255, 0.05)",
+            "scaleFontColor": "rgba(148, 163, 184, 1)",
+            "belowLineFillColorGrowing": "rgba(0, 212, 255, 0.05)",
+            "belowLineFillColorFalling": "rgba(239, 68, 68, 0.05)",
+            "belowLineFillColorGrowingBottom": "rgba(0, 212, 255, 0)",
+            "belowLineFillColorFallingBottom": "rgba(239, 68, 68, 0)",
+            "symbolActiveColor": "rgba(0, 212, 255, 0.1)",
+            "tabs": [
+              {
+                "title": "Indices",
+                "symbols": [
+                  {"s": "FOREXCOM:SPXUSD", "d": "S&P 500"},
+                  {"s": "FOREXCOM:NSXUSD", "d": "NASDAQ 100"},
+                  {"s": "FOREXCOM:DJI", "d": "Dow Jones"},
+                  {"s": "INDEX:NKY", "d": "Nikkei 225"},
+                  {"s": "INDEX:DEU40", "d": "DAX"},
+                  {"s": "FOREXCOM:UKXGBP", "d": "FTSE 100"}
+                ],
+                "originalTitle": "Indices"
+              },
+              {
+                "title": "Commodities",
+                "symbols": [
+                  {"s": "CME_MINI:ES1!", "d": "S&P 500 Futures"},
+                  {"s": "COMEX:GC1!", "d": "Gold"},
+                  {"s": "NYMEX:CL1!", "d": "Crude Oil"},
+                  {"s": "NYMEX:NG1!", "d": "Natural Gas"},
+                  {"s": "CBOT:ZC1!", "d": "Corn"},
+                  {"s": "CBOT:ZW1!", "d": "Wheat"}
+                ],
+                "originalTitle": "Commodities"
+              },
+              {
+                "title": "Crypto",
+                "symbols": [
+                  {"s": "BINANCE:BTCUSDT", "d": "Bitcoin"},
+                  {"s": "BINANCE:ETHUSDT", "d": "Ethereum"},
+                  {"s": "BINANCE:SOLUSDT", "d": "Solana"},
+                  {"s": "BINANCE:BNBUSDT", "d": "BNB"}
+                ],
+                "originalTitle": "Crypto"
+              }
+            ]
+          }
+          </script>
+        </div>
+      </div>
+
+      <!-- Market Education Cards -->
+      <div class="market-cards">
+        <div class="market-card reveal">
+          <div class="market-card-icon">🐂</div>
+          <h3>Bull &amp; Bear Markets</h3>
+          <p>A <strong>bull market</strong> is a sustained rise of 20%+ from recent lows — typically driven by economic growth, low unemployment, and investor confidence. A <strong>bear market</strong> is a sustained fall of 20%+ from recent highs, often triggered by recessions or shocks. Historically, bull markets last much longer than bear markets.</p>
+        </div>
+        <div class="market-card reveal">
+          <div class="market-card-icon">📊</div>
+          <h3>Major Indices</h3>
+          <p>The <strong>S&amp;P 500</strong> tracks 500 large US companies and is the world's most-watched benchmark. The <strong>NASDAQ 100</strong> focuses on the largest non-financial companies, heavily weighted toward tech. The <strong>Dow Jones</strong> is the oldest, tracking just 30 blue-chip companies. These indices are the pulse of the global economy.</p>
+        </div>
+        <div class="market-card reveal">
+          <div class="market-card-icon">🔬</div>
+          <h3>Fundamental Analysis</h3>
+          <p>Investors look at <strong>P/E ratio</strong> (price-to-earnings — how much you pay for $1 of profit), <strong>P/B ratio</strong> (price vs book value), <strong>EPS</strong> (earnings per share), <strong>free cash flow</strong>, and <strong>ROE</strong>. Benjamin Graham taught that buying a company below its intrinsic value — with a margin of safety — is the bedrock of sound investing.</p>
+        </div>
+        <div class="market-card reveal">
+          <div class="market-card-icon">📉</div>
+          <h3>Technical Analysis</h3>
+          <p>Technical analysts study <strong>price action, volume, moving averages</strong> (MA50, MA200), <strong>RSI</strong> (relative strength index), <strong>MACD</strong>, and chart patterns (head &amp; shoulders, cup &amp; handle). The <strong>golden cross</strong> (MA50 crossing above MA200) is a classic bullish signal. Technical analysis captures market psychology, not fundamentals.</p>
+        </div>
+        <div class="market-card reveal">
+          <div class="market-card-icon">⚖️</div>
+          <h3>Risk &amp; Diversification</h3>
+          <p><strong>Don't put all eggs in one basket.</strong> Modern Portfolio Theory (Markowitz, 1952) shows that combining uncorrelated assets reduces portfolio volatility without sacrificing returns. Asset allocation across stocks, bonds, commodities, and geographies is the most reliable free lunch in finance. Rebalancing annually keeps risk in check.</p>
+        </div>
+        <div class="market-card reveal">
+          <div class="market-card-icon">🧮</div>
+          <h3>The Power of Compounding</h3>
+          <p>Einstein allegedly called compounding the <em>eighth wonder of the world</em>. $10,000 invested at 10%/year becomes <strong>$174,494</strong> in 30 years — with zero additional contributions. Time in the market beats timing the market. The S&amp;P 500 has returned ~10.5% annually since 1957, rewarding patient long-term investors consistently.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── ENCYCLOPEDIA ───────────────────────── -->
+  <section id="encyclopedia" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title reveal">Knowledge Encyclopedia</h2>
+      <p class="section-subtitle reveal">362 pages of curated human knowledge — auto-advances every 30 seconds. Use the controls to navigate freely.</p>
+      <div class="encyclopedia-wrapper reveal">
+        <div class="encyclopedia-controls">
+          <button id="encPrev" class="enc-btn" aria-label="Previous page">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="enc-page-info"><span id="encCurrentPage">1</span> / <span id="encTotalPages">362</span></span>
+          <button id="encNext" class="enc-btn" aria-label="Next page">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button id="encPlayPause" class="enc-btn enc-btn-play" aria-label="Play/Pause auto-advance">
+            <svg id="playIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg id="pauseIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <div class="enc-progress">
+            <div class="enc-progress-bar" id="encProgressBar"></div>
+          </div>
+        </div>
+        <div class="encyclopedia-canvas-wrapper">
+          <canvas id="encyclopediaCanvas"></canvas>
+          <div class="enc-loading" id="encLoading">
+            <div class="enc-spinner"></div>
+            <span>Loading encyclopedia…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── QUOTES ───────────────────────── -->
+  <section id="quotes" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">Words That Shape Thinking</h2>
+      <div class="quotes-carousel reveal">
+        <div class="quote-display">
+          <div class="quote-mark">"</div>
+          <p class="quote-text" id="quoteText"></p>
+          <div class="quote-author" id="quoteAuthor"></div>
+          <div class="quote-category" id="quoteCategory"></div>
+        </div>
+        <div class="quote-dots" id="quoteDots"></div>
+        <div class="quote-nav">
+          <button id="quotePrev" class="quote-btn" aria-label="Previous quote">←</button>
+          <button id="quoteNext" class="quote-btn" aria-label="Next quote">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── EDUCATION ───────────────────────── -->
+  <section id="education" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title reveal">Education</h2>
+      <div class="education-grid">
+        <div class="education-card reveal">
+          <div class="edu-icon">🎓</div>
+          <div class="edu-content">
+            <h3>IoT &amp; Machine Intelligence</h3>
+            <p class="edu-school">Sheridan College · Ontario, Canada</p>
+            <p class="edu-date">Sep 2023 – Apr 2024</p>
+            <p>Graduate Certificate. Smart irrigation systems with ESP-32, FANUC robotics, PLC programming, RTOS on PIC24 microcontrollers.</p>
+          </div>
+        </div>
+        <div class="education-card reveal">
+          <div class="edu-icon">⚡</div>
+          <div class="edu-content">
+            <h3>B.Sc. Electronics Engineering</h3>
+            <p class="edu-school">Sabanci University · Istanbul, Turkey</p>
+            <p class="edu-date">Sep 2017 – Jun 2022</p>
+            <p>GPA 3.23 / 4.00 — Dean's List (High Honour). Full merit-based scholarship — top 0.1% in national university placement exam. Coursework: ML, Microprocessors, Biomedical Instrumentation, Signal Processing, Cryptography, Computer Vision, Semiconductor Physics, MEMS.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── CONTACT ───────────────────────── -->
+  <section id="contact" class="section">
+    <div class="container contact-container">
+      <h2 class="section-title reveal">Let's Connect</h2>
+      <p class="section-subtitle reveal">Whether you have a project in mind, a question, or just want to say hello — my inbox is open.</p>
+      <div class="contact-links reveal">
+        <a href="mailto:bariscan@alumni.sabanciuniv.edu" class="contact-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          bariscan@alumni.sabanciuniv.edu
+        </a>
+        <a href="https://github.com/bariscan-kose" target="_blank" rel="noopener" class="contact-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.933.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.578.688.48C19.138 20.165 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+          github.com/bariscan-kose
+        </a>
+        <a href="https://linkedin.com/in/bariscan-kose" target="_blank" rel="noopener" class="contact-link">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          linkedin.com/in/bariscan-kose
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── FOOTER ───────────────────────── -->
+  <footer>
+    <div class="container footer-inner">
+      <span class="footer-logo">BK</span>
+      <p>© 2026 Bariscan Kose. Built with care in Toronto.</p>
+      <p class="footer-sub">Electronics Engineer · Software Developer · Lifelong Learner</p>
+    </div>
+  </footer>
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
