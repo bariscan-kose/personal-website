@@ -827,7 +827,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .encyclopedia-canvas-wrapper {
   position: relative;
-  min-height: 500px;
+  min-height: 700px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -837,7 +837,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 #encyclopediaCanvas {
   display: block;
   max-width: 100%;
-  max-height: 75vh;
+  max-height: 88vh;
   margin: 0 auto;
 }
 

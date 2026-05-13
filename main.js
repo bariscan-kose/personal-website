@@ -472,7 +472,7 @@ showQuote(0);
   let isPlaying   = true;
   let autoTimer   = null;
   let rendering   = false;
-  const INTERVAL  = 30000;
+  const INTERVAL  = 10000;
   let progressStart = null;
 
   function animateProgress(elapsed) {
@@ -522,7 +522,7 @@ showQuote(0);
     if (!isPlaying) return;
     setTimeout(() => startProgress(), 50);
     autoTimer = setTimeout(() => {
-      const next = currentPage < totalPages ? currentPage + 1 : 1;
+      const next = Math.floor(Math.random() * totalPages) + 1;
       renderPage(next);
       scheduleNext();
     }, INTERVAL);
