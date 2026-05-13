@@ -441,7 +441,6 @@ const quotes = [
   { text: "Ostinati Rigore.", author: "Leonardo da Vinci", cat: "Rigorous persistence." },
   { text: "You fear your own power, you fear your anger, the drive to do great or terrible things.", author: "Ra's Al Ghul", cat: "Batman Begins" },
   { text: "He who can, does not want to. He who wants to, cannot. He who knows, does not do. He who does, does not know. And thus the world goes badly.", author: "Ascoli Piceno, 1529", cat: "Italian Inscription" },
-  { text: "We are built for romance and adventure, not for comfort. You are going to find the meaning of your life in adventure. Do what is right and see what happens.", author: "Jordan B. Peterson", cat: "Philosophy" },
   { text: "Data, data, data! I can't make bricks without clay.", author: "Sherlock Holmes", cat: "Arthur Conan Doyle" },
   { text: "I must not fear. Fear is the mind-killer. Fear is the little death that brings obliteration. I will face my fear and permit it to pass over me and through me. Where the fear has gone there will be nothing — only I will remain.", author: "Frank Herbert", cat: "Dune" },
   { text: "Don't bend; don't water it down; don't try to make it logical; don't edit your own soul according to the fashion. Rather, follow your most intense obsessions mercilessly.", author: "Franz Kafka", cat: "Literature" },
@@ -456,9 +455,11 @@ const quotes = [
   { text: "Continuous improvement is better than delayed perfection.", author: "Mark Twain", cat: "Wisdom" },
   { text: "An industry is a customer-satisfying process, not a goods-producing process.", author: "Theodore Levitt", cat: "Business" },
   { text: "Play to win or don't play at all.", author: "Unknown", cat: "Wisdom" },
-  { text: "Boil things down to their fundamental truths and reason up from there. Most of our life, we reason by analogy, copying what other people do with slight variations.", author: "Elon Musk", cat: "First Principles" },
   { text: "If it works, it ain't stupid.", author: "Unknown", cat: "Engineering" },
   { text: "My life got a lot better when I stopped trying to be happy and started trying to be useful.", author: "Alex Hormozi", cat: "Self-Development" },
+  { text: "A man who is a master of patience is master of everything else.", author: "George Savile", cat: "Wisdom" },
+  { text: "You are not a drop in the ocean. You are the entire ocean in a drop.", author: "Rumi", cat: "Philosophy" },
+  { text: "When you have 8–12 investments that are uncorrelated with each other, you decrease your risk by 80%.", author: "Tony Robbins", cat: "Investing" },
 ];
 
 let quoteIdx = 0;
@@ -531,7 +532,6 @@ const signoffs = [
   "Warm regards? In this economy?",
   "Your silliest goose.",
   "Drunk, lit, in this bit.",
-  "Please tell your mama I love 'er.",
   "With no sincerity.",
   "On the edge.",
   "Knuck if you buck.",
