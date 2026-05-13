@@ -592,7 +592,7 @@ showSignoff(0);
 
   let pdfDoc     = null;
   let currentPage = 1;
-  let totalPages  = 362;
+  let totalPages  = 114;
   let isPlaying   = true;
   let autoTimer   = null;
   let rendering   = false;
