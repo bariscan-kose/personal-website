@@ -23,6 +23,8 @@
         <li><a href="#art">Creative Code</a></li>
         <li><a href="#markets">Markets</a></li>
         <li><a href="#encyclopedia">Encyclopedia</a></li>
+        <li><a href="#thinking">Thinking</a></li>
+        <li><a href="#signoffs">Sign-Offs</a></li>
         <li><a href="#quotes">Wisdom</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
@@ -361,37 +363,21 @@
         </div>
       </div>
 
-      <!-- Market Education Cards -->
-      <div class="market-cards">
-        <div class="market-card reveal">
-          <div class="market-card-icon">🐂</div>
-          <h3>Bull &amp; Bear Markets</h3>
-          <p>A <strong>bull market</strong> is a sustained rise of 20%+ from recent lows — typically driven by economic growth, low unemployment, and investor confidence. A <strong>bear market</strong> is a sustained fall of 20%+ from recent highs, often triggered by recessions or shocks. Historically, bull markets last much longer than bear markets.</p>
-        </div>
-        <div class="market-card reveal">
-          <div class="market-card-icon">📊</div>
-          <h3>Major Indices</h3>
-          <p>The <strong>S&amp;P 500</strong> tracks 500 large US companies and is the world's most-watched benchmark. The <strong>NASDAQ 100</strong> focuses on the largest non-financial companies, heavily weighted toward tech. The <strong>Dow Jones</strong> is the oldest, tracking just 30 blue-chip companies. These indices are the pulse of the global economy.</p>
-        </div>
-        <div class="market-card reveal">
-          <div class="market-card-icon">🔬</div>
-          <h3>Fundamental Analysis</h3>
-          <p>Investors look at <strong>P/E ratio</strong> (price-to-earnings — how much you pay for $1 of profit), <strong>P/B ratio</strong> (price vs book value), <strong>EPS</strong> (earnings per share), <strong>free cash flow</strong>, and <strong>ROE</strong>. Benjamin Graham taught that buying a company below its intrinsic value — with a margin of safety — is the bedrock of sound investing.</p>
-        </div>
-        <div class="market-card reveal">
-          <div class="market-card-icon">📉</div>
-          <h3>Technical Analysis</h3>
-          <p>Technical analysts study <strong>price action, volume, moving averages</strong> (MA50, MA200), <strong>RSI</strong> (relative strength index), <strong>MACD</strong>, and chart patterns (head &amp; shoulders, cup &amp; handle). The <strong>golden cross</strong> (MA50 crossing above MA200) is a classic bullish signal. Technical analysis captures market psychology, not fundamentals.</p>
-        </div>
-        <div class="market-card reveal">
-          <div class="market-card-icon">⚖️</div>
-          <h3>Risk &amp; Diversification</h3>
-          <p><strong>Don't put all eggs in one basket.</strong> Modern Portfolio Theory (Markowitz, 1952) shows that combining uncorrelated assets reduces portfolio volatility without sacrificing returns. Asset allocation across stocks, bonds, commodities, and geographies is the most reliable free lunch in finance. Rebalancing annually keeps risk in check.</p>
-        </div>
-        <div class="market-card reveal">
-          <div class="market-card-icon">🧮</div>
-          <h3>The Power of Compounding</h3>
-          <p>Einstein allegedly called compounding the <em>eighth wonder of the world</em>. $10,000 invested at 10%/year becomes <strong>$174,494</strong> in 30 years — with zero additional contributions. Time in the market beats timing the market. The S&amp;P 500 has returned ~10.5% annually since 1957, rewarding patient long-term investors consistently.</p>
+      <!-- Market News Feed -->
+      <div class="news-widget-wrapper reveal">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+          {
+            "feedMode": "all_symbols",
+            "colorTheme": "dark",
+            "isTransparent": true,
+            "displayMode": "regular",
+            "width": "100%",
+            "height": "600",
+            "locale": "en"
+          }
+          </script>
         </div>
       </div>
     </div>
@@ -430,6 +416,49 @@
     </div>
   </section>
 
+  <!-- ───────────────────────── THINKING TOOLS ───────────────────────── -->
+  <section id="thinking" class="section">
+    <div class="container">
+      <h2 class="section-title reveal">Think Clearly</h2>
+      <p class="section-subtitle reveal">Two essential reference posters for sharper reasoning — recognise the traps in your own thinking and in the arguments of others.</p>
+      <div class="posters-grid">
+        <div class="poster-card reveal">
+          <div class="poster-label">
+            <span class="poster-number">I</span>
+            <div>
+              <h3>Logical Fallacies</h3>
+              <p>24 flawed argument patterns that derail rational discourse</p>
+            </div>
+          </div>
+          <a href="fallacies.jpg" target="_blank" rel="noopener" class="poster-link">
+            <img src="fallacies.jpg" alt="Thou Shalt Not Commit Logical Fallacies poster" class="poster-img">
+            <div class="poster-overlay">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Click to view full size
+            </div>
+          </a>
+        </div>
+        <div class="poster-card reveal">
+          <div class="poster-label">
+            <span class="poster-number">II</span>
+            <div>
+              <h3>Cognitive Biases</h3>
+              <p>24 mental shortcuts that systematically distort your judgement</p>
+            </div>
+          </div>
+          <a href="biases.jpg" target="_blank" rel="noopener" class="poster-link">
+            <img src="biases.jpg" alt="Thou Shalt Not Suffer Cognitive Biases poster" class="poster-img">
+            <div class="poster-overlay">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+              Click to view full size
+            </div>
+          </a>
+        </div>
+      </div>
+      <p class="poster-credit reveal">Posters by <a href="https://thethinkingshop.org" target="_blank" rel="noopener">The Thinking Shop</a></p>
+    </div>
+  </section>
+
   <!-- ───────────────────────── QUOTES ───────────────────────── -->
   <section id="quotes" class="section">
     <div class="container">
@@ -445,6 +474,25 @@
         <div class="quote-nav">
           <button id="quotePrev" class="quote-btn" aria-label="Previous quote">←</button>
           <button id="quoteNext" class="quote-btn" aria-label="Next quote">→</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── SIGN-OFFS ───────────────────────── -->
+  <section id="signoffs" class="section section-dark">
+    <div class="container">
+      <h2 class="section-title reveal">Email Sign-Offs</h2>
+      <p class="section-subtitle reveal">Because "Best regards" is too predictable.</p>
+      <div class="signoff-carousel reveal">
+        <div class="signoff-display">
+          <div class="signoff-dash">—</div>
+          <p class="signoff-text" id="signoffText"></p>
+        </div>
+        <div class="signoff-dots" id="signoffDots"></div>
+        <div class="quote-nav">
+          <button id="signoffPrev" class="quote-btn" aria-label="Previous">←</button>
+          <button id="signoffNext" class="quote-btn" aria-label="Next">→</button>
         </div>
       </div>
     </div>

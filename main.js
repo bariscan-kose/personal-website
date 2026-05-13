@@ -394,20 +394,32 @@ document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el)
    QUOTES CAROUSEL
 ═══════════════════════════════════════════════ */
 const quotes = [
-  { text: "The stock market is filled with individuals who know the price of everything, but the value of nothing.", author: "Philip Fisher", cat: "Investing" },
-  { text: "In the short run, the market is a voting machine but in the long run, it is a weighing machine.", author: "Benjamin Graham", cat: "Investing" },
-  { text: "Any sufficiently advanced technology is indistinguishable from magic.", author: "Arthur C. Clarke", cat: "Technology" },
-  { text: "The best investment you can make is in yourself. The returns are tremendous.", author: "Warren Buffett", cat: "Investing" },
-  { text: "The measure of intelligence is the ability to change.", author: "Albert Einstein", cat: "Science" },
-  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs", cat: "Life" },
-  { text: "Price is what you pay. Value is what you get.", author: "Warren Buffett", cat: "Investing" },
-  { text: "It always seems impossible until it's done.", author: "Nelson Mandela", cat: "Life" },
-  { text: "First, solve the problem. Then, write the code.", author: "John Johnson", cat: "Engineering" },
-  { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein", cat: "Science" },
-  { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela", cat: "Life" },
-  { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs", cat: "Technology" },
-  { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin", cat: "Wisdom" },
-  { text: "The future belongs to those who learn more skills and combine them in creative ways.", author: "Robert Greene", cat: "Wisdom" },
+  { text: "Verba volant, scripta manent.", author: "Latin Proverb", cat: "Speech goes away, writing is permanent." },
+  { text: "The only rules that really matter are these: what a man can do and what a man can't do.", author: "Captain Jack Sparrow", cat: "Pirates of the Caribbean" },
+  { text: "Beauty awakens the soul to act.", author: "Dante Alighieri", cat: "Literature" },
+  { text: "Gradatim ferociter.", author: "Latin", cat: "Step by step, ferociously." },
+  { text: "Ostinati Rigore.", author: "Leonardo da Vinci", cat: "Rigorous persistence." },
+  { text: "As space, so atoms. As mind, so life.", author: "Bariscan Kose", cat: "Original" },
+  { text: "You fear your own power, you fear your anger, the drive to do great or terrible things.", author: "Ra's Al Ghul", cat: "Batman Begins" },
+  { text: "He who can, does not want to. He who wants to, cannot. He who knows, does not do. He who does, does not know. And thus the world goes badly.", author: "Ascoli Piceno, 1529", cat: "Italian Inscription" },
+  { text: "We are built for romance and adventure, not for comfort. You are going to find the meaning of your life in adventure. Do what is right and see what happens.", author: "Jordan B. Peterson", cat: "Philosophy" },
+  { text: "Data, data, data! I can't make bricks without clay.", author: "Sherlock Holmes", cat: "Arthur Conan Doyle" },
+  { text: "I must not fear. Fear is the mind-killer. Fear is the little death that brings obliteration. I will face my fear and permit it to pass over me and through me. Where the fear has gone there will be nothing — only I will remain.", author: "Frank Herbert", cat: "Dune" },
+  { text: "Don't bend; don't water it down; don't try to make it logical; don't edit your own soul according to the fashion. Rather, follow your most intense obsessions mercilessly.", author: "Franz Kafka", cat: "Literature" },
+  { text: "An expert is a man who has made all the mistakes which can be made, in a narrow field.", author: "Niels Bohr", cat: "Science" },
+  { text: "Idleness makes the hours pass slowly and the years swiftly. Activity makes the hours short and the years long.", author: "Cesare Pavese", cat: "Literature" },
+  { text: "World is decay. Life is perception.", author: "Democritus", cat: "470–370 BC" },
+  { text: "What I cannot create, I do not understand.", author: "Richard Feynman", cat: "Science" },
+  { text: "Problem-solving is hunting; it is savage pleasure and we are born to it.", author: "Thomas Harris", cat: "The Silence of the Lambs" },
+  { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci", cat: "Art & Science" },
+  { text: "Knowledge isn't power until it's applied.", author: "Dale Carnegie", cat: "Self-Development" },
+  { text: "You can't play truth games with people playing status games.", author: "Naval Ravikant", cat: "Philosophy" },
+  { text: "Continuous improvement is better than delayed perfection.", author: "Mark Twain", cat: "Wisdom" },
+  { text: "An industry is a customer-satisfying process, not a goods-producing process.", author: "Theodore Levitt", cat: "Business" },
+  { text: "Play to win or don't play at all.", author: "Unknown", cat: "Wisdom" },
+  { text: "Boil things down to their fundamental truths and reason up from there. Most of our life, we reason by analogy, copying what other people do with slight variations.", author: "Elon Musk", cat: "First Principles" },
+  { text: "If it works, it ain't stupid.", author: "Unknown", cat: "Engineering" },
+  { text: "My life got a lot better when I stopped trying to be happy and started trying to be useful.", author: "Alex Hormozi", cat: "Self-Development" },
 ];
 
 let quoteIdx = 0;
@@ -447,6 +459,79 @@ document.getElementById('quotePrev').addEventListener('click', () => showQuote(q
 document.getElementById('quoteNext').addEventListener('click', () => showQuote(quoteIdx + 1));
 
 showQuote(0);
+
+/* ═══════════════════════════════════════════════
+   SIGN-OFFS CAROUSEL
+═══════════════════════════════════════════════ */
+const signoffs = [
+  "That's the way the cookie crumbles.",
+  "In a galaxy far far away...",
+  "That's Hollywood, for ya.",
+  "No trees were destroyed in the sending of this message. However, a significant number of electrons were terribly inconvenienced.",
+  "Don't stop believin'.",
+  "That's all, folks!",
+  "Tag, you're it.",
+  "Like a unicorn, I'm off to spread magic elsewhere.",
+  "I've already told you more than I know.",
+  "Mic drop.",
+  "Live, laugh, love that for you.",
+  "Hakuna Matata.",
+  "Risk it to get a biscuit.",
+  "With anxiety.",
+  "Sincerely confused.",
+  "In the bleak midwinter.",
+  "Let's not circle back.",
+  "Respectfully no thanks.",
+  "Another day of saving the bees.",
+  "Please hesitate if you have any questions.",
+  "Live, laugh, leave me alone.",
+  "*Insert pleasantry here.*",
+  "We do this not because it is easy, but because we thought it would be easy.",
+  "Please hesitate to reach out.",
+  "There's no toilet paper in the bathroom.",
+  "Warm regards? In this economy?",
+  "Your silliest goose.",
+  "Drunk, lit, in this bit.",
+  "Please tell your mama I love 'er.",
+  "With no sincerity.",
+  "On the edge.",
+  "Knuck if you buck.",
+  "Light's on, no one's home.",
+  "Firetrucks are actually watertrucks.",
+];
+
+let signoffIdx = 0;
+let signoffTimer = null;
+const signoffTextEl = document.getElementById('signoffText');
+const signoffDotsEl = document.getElementById('signoffDots');
+
+function renderSignoffDots() {
+  signoffDotsEl.innerHTML = '';
+  signoffs.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'quote-dot' + (i === signoffIdx ? ' active' : '');
+    d.setAttribute('aria-label', `Sign-off ${i + 1}`);
+    d.addEventListener('click', () => showSignoff(i));
+    signoffDotsEl.appendChild(d);
+  });
+}
+
+function showSignoff(idx) {
+  signoffIdx = (idx + signoffs.length) % signoffs.length;
+  signoffTextEl.style.opacity = '0';
+  setTimeout(() => {
+    signoffTextEl.textContent = signoffs[signoffIdx];
+    signoffTextEl.style.opacity = '1';
+    renderSignoffDots();
+  }, 200);
+  clearTimeout(signoffTimer);
+  signoffTimer = setTimeout(() => showSignoff(signoffIdx + 1), 4000);
+}
+
+document.getElementById('signoffPrev').addEventListener('click', () => showSignoff(signoffIdx - 1));
+document.getElementById('signoffNext').addEventListener('click', () => showSignoff(signoffIdx + 1));
+
+showSignoff(0);
 
 /* ═══════════════════════════════════════════════
    ENCYCLOPEDIA PDF VIEWER
