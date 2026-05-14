@@ -6,6 +6,6 @@
 // ─────────────────────────────────────────────
 const GALLERY_IMAGES = [
   // Example — uncomment and add your files:
-  // { file: 'northern-lights.jpg',  caption: 'Aurora Borealis · CC BY 2.0' },
+  { file: 'empire-of-microsoft.jpg',  caption: 'Software wars" by wike is licensed under CC BY-SA 2.0.' },
   // { file: 'hubble-pillars.jpg',   caption: 'Pillars of Creation · NASA Public Domain' },
 ];
