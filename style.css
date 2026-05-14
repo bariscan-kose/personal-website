@@ -842,10 +842,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   padding: 10px 16px;
   font-size: 0.78rem;
   color: var(--text-muted);
-  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);
   font-family: var(--font-mono);
   text-align: center;
   pointer-events: none;
+  z-index: 2;
 }
 
 .gallery-empty {

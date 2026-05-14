@@ -578,9 +578,9 @@ showSignoff(0);
 (function initGallery() {
   const images    = (typeof GALLERY_IMAGES !== 'undefined') ? GALLERY_IMAGES : [];
   const imgEl     = document.getElementById('galleryImg');
+  const captionEl = document.getElementById('galleryCaption');
   const loadingEl = document.getElementById('encLoading');
   const emptyEl   = document.getElementById('galleryEmpty');
-  const captionEl = document.getElementById('galleryCaption');
   const pageEl    = document.getElementById('encCurrentPage');
   const totalEl   = document.getElementById('encTotalPages');
   const progressEl = document.getElementById('encProgressBar');
