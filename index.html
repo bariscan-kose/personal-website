@@ -25,7 +25,7 @@
         <li><a href="#projects">Projects</a></li>
         <li><a href="#art">Creative Code</a></li>
         <li><a href="#markets">Markets</a></li>
-        <li><a href="#encyclopedia">Encyclopedia</a></li>
+        <li><a href="#encyclopedia">Gallery</a></li>
         <li><a href="#thinking">Thinking</a></li>
         <li><a href="#signoffs">Sign-Offs</a></li>
         <li><a href="#quotes">Wisdom</a></li>
@@ -384,18 +384,18 @@
     </div>
   </section>
 
-  <!-- ───────────────────────── ENCYCLOPEDIA ───────────────────────── -->
+  <!-- ───────────────────────── GALLERY ───────────────────────── -->
   <section id="encyclopedia" class="section section-dark">
     <div class="container">
-      <h2 class="section-title reveal">Knowledge Encyclopedia</h2>
-      <p class="section-subtitle reveal">Curated human knowledge — auto-advances every 10 seconds to a random page. Use the controls to navigate freely.</p>
+      <h2 class="section-title reveal">Curated Gallery</h2>
+      <p class="section-subtitle reveal">A collection of Creative Commons images — auto-advances every 10 seconds. Use the controls to browse freely.</p>
       <div class="encyclopedia-wrapper reveal">
         <div class="encyclopedia-controls">
-          <button id="encPrev" class="enc-btn" aria-label="Previous page">
+          <button id="encPrev" class="enc-btn" aria-label="Previous image">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
           </button>
-          <span class="enc-page-info"><span id="encCurrentPage">1</span> / <span id="encTotalPages">114</span></span>
-          <button id="encNext" class="enc-btn" aria-label="Next page">
+          <span class="enc-page-info"><span id="encCurrentPage">—</span> / <span id="encTotalPages">—</span></span>
+          <button id="encNext" class="enc-btn" aria-label="Next image">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
           <button id="encPlayPause" class="enc-btn enc-btn-play" aria-label="Play/Pause auto-advance">
@@ -407,10 +407,14 @@
           </div>
         </div>
         <div class="encyclopedia-canvas-wrapper">
-          <canvas id="encyclopediaCanvas"></canvas>
-          <div class="enc-loading" id="encLoading">
+          <div class="enc-loading" id="encLoading" style="display:none;">
             <div class="enc-spinner"></div>
-            <span>Loading encyclopedia…</span>
+            <span>Loading image…</span>
+          </div>
+          <img id="galleryImg" alt="" style="display:none; max-width:100%; max-height:75vh; margin:0 auto;">
+          <div class="gallery-caption" id="galleryCaption"></div>
+          <div class="gallery-empty" id="galleryEmpty">
+            <p>📂 Add <strong>.jpg / .png / .webp</strong> files to the <code>gallery/</code> folder and list them in <code>gallery.js</code>.</p>
           </div>
         </div>
       </div>
@@ -557,8 +561,7 @@
     </div>
   </footer>
 
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="gallery.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

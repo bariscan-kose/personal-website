@@ -573,94 +573,90 @@ document.getElementById('signoffNext').addEventListener('click', () => showSigno
 showSignoff(0);
 
 /* ═══════════════════════════════════════════════
-   ENCYCLOPEDIA PDF VIEWER
+   CURATED GALLERY VIEWER
 ═══════════════════════════════════════════════ */
-(function initEncyclopedia() {
-  if (typeof pdfjsLib === 'undefined') return;
-
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-  const canvas   = document.getElementById('encyclopediaCanvas');
-  const ctx      = canvas.getContext('2d');
+(function initGallery() {
+  const images    = (typeof GALLERY_IMAGES !== 'undefined') ? GALLERY_IMAGES : [];
+  const imgEl     = document.getElementById('galleryImg');
   const loadingEl = document.getElementById('encLoading');
+  const emptyEl   = document.getElementById('galleryEmpty');
+  const captionEl = document.getElementById('galleryCaption');
   const pageEl    = document.getElementById('encCurrentPage');
   const totalEl   = document.getElementById('encTotalPages');
   const progressEl = document.getElementById('encProgressBar');
   const playIcon  = document.getElementById('playIcon');
   const pauseIcon = document.getElementById('pauseIcon');
 
-  let pdfDoc     = null;
-  let currentPage = 1;
-  let totalPages  = 114;
-  let isPlaying   = true;
-  let autoTimer   = null;
-  let rendering   = false;
-  const INTERVAL  = 10000;
-  let progressStart = null;
-
-  function animateProgress(elapsed) {
-    const pct = Math.min((elapsed / INTERVAL) * 100, 100);
-    progressEl.style.width = pct + '%';
-    if (pct < 100) requestAnimationFrame(ts => animateProgress(ts - (progressStart - elapsed + ts)));
+  if (!images.length) {
+    emptyEl.style.display = 'flex';
+    return;
   }
 
-  function startProgress() {
-    progressEl.style.width = '0%';
-    progressEl.style.transition = `width ${INTERVAL}ms linear`;
-    requestAnimationFrame(() => { progressEl.style.width = '100%'; });
-  }
+  emptyEl.style.display  = 'none';
+  pauseIcon.style.display = 'block';
+  playIcon.style.display  = 'none';
+
+  let current   = 0;
+  let isPlaying = true;
+  let autoTimer = null;
+  const INTERVAL = 10000;
+  const total    = images.length;
+
+  totalEl.textContent = total;
 
   function resetProgress() {
     progressEl.style.transition = 'none';
     progressEl.style.width = '0%';
   }
 
-  async function renderPage(num) {
-    if (!pdfDoc || rendering) return;
-    rendering = true;
+  function startProgress() {
+    resetProgress();
+    setTimeout(() => {
+      progressEl.style.transition = `width ${INTERVAL}ms linear`;
+      progressEl.style.width = '100%';
+    }, 50);
+  }
+
+  function showImage(idx) {
+    current = (idx + total) % total;
+    const entry = images[current];
+    pageEl.textContent = current + 1;
+
     loadingEl.style.display = 'flex';
-    try {
-      const page     = await pdfDoc.getPage(num);
-      const viewport = page.getViewport({ scale: 1 });
-      const wrapper  = canvas.parentElement;
-      const maxW     = wrapper.clientWidth - 2;
-      const maxH     = window.innerHeight * 0.72;
-      const scale    = Math.min(maxW / viewport.width, maxH / viewport.height);
-      const scaled   = page.getViewport({ scale });
-      canvas.width   = scaled.width;
-      canvas.height  = scaled.height;
-      await page.render({ canvasContext: ctx, viewport: scaled }).promise;
-      currentPage = num;
-      pageEl.textContent = num;
-    } catch (e) {
-      console.error('PDF render error:', e);
-    }
-    loadingEl.style.display = 'none';
-    rendering = false;
+    imgEl.style.display = 'none';
+
+    const tmp = new Image();
+    tmp.onload = () => {
+      imgEl.src = tmp.src;
+      imgEl.alt = entry.caption || '';
+      imgEl.style.display = 'block';
+      captionEl.textContent = entry.caption || '';
+      loadingEl.style.display = 'none';
+    };
+    tmp.onerror = () => {
+      loadingEl.style.display = 'none';
+      captionEl.textContent = `Could not load: ${entry.file}`;
+    };
+    tmp.src = `gallery/${entry.file}`;
   }
 
   function scheduleNext() {
     clearTimeout(autoTimer);
-    resetProgress();
     if (!isPlaying) return;
-    setTimeout(() => startProgress(), 50);
+    startProgress();
     autoTimer = setTimeout(() => {
-      const next = Math.floor(Math.random() * totalPages) + 1;
-      renderPage(next);
+      showImage(current + 1);
       scheduleNext();
     }, INTERVAL);
   }
 
   document.getElementById('encPrev').addEventListener('click', () => {
-    const prev = currentPage > 1 ? currentPage - 1 : totalPages;
-    renderPage(prev);
+    showImage(current - 1);
     scheduleNext();
   });
 
   document.getElementById('encNext').addEventListener('click', () => {
-    const next = currentPage < totalPages ? currentPage + 1 : 1;
-    renderPage(next);
+    showImage(current + 1);
     scheduleNext();
   });
 
@@ -672,26 +668,6 @@ showSignoff(0);
     else { clearTimeout(autoTimer); resetProgress(); }
   });
 
-  // Load PDF when section enters view
-  const encSection = document.getElementById('encyclopedia');
-  let loaded = false;
-  const loadObs = new IntersectionObserver(entries => {
-    if (entries[0].isIntersecting && !loaded) {
-      loaded = true;
-      loadObs.disconnect();
-      pdfjsLib.getDocument('encyclopedia.pdf').promise.then(pdf => {
-        pdfDoc      = pdf;
-        totalPages  = pdf.numPages;
-        totalEl.textContent = totalPages;
-        pauseIcon.style.display = 'block';
-        playIcon.style.display  = 'none';
-        renderPage(Math.floor(Math.random() * totalPages) + 1);
-        scheduleNext();
-      }).catch(err => {
-        loadingEl.innerHTML = '<p style="color:#ef4444;padding:24px;">Could not load encyclopedia.pdf — ensure the file is in the project root.</p>';
-        console.error(err);
-      });
-    }
-  }, { threshold: 0.1 });
-  loadObs.observe(encSection);
+  showImage(0);
+  scheduleNext();
 })();
