@@ -32,7 +32,7 @@ const GALLERY_IMAGES = [
   { file: 'tunnels-of-time.jpg',   caption: 'Tunnels of Time, fdecomite, CC BY 2.0.' },
   { file: 'Layered_Model_of_Quantum_Computing.png',   caption: 'Layered Model of Quantum Computing, Radova, CC0, via Wikimedia Commons' },
   { file: 'DeterminantOfMatrix.png',   caption: 'Determinant of Matrix, DARAKI Satoru, CC0, via Wikimedia Commons' },
-  { file: 'textile-factory.jpg',   caption: 'Lady working at carpet loom in Halifax in the sixties, HalifaxArchvie, CC BY 2.0.' },
+  { file: 'textile-factory.jpg',   caption: 'Lady working at carpet loom in Halifax in the sixties, HalifaxArchive, CC BY 2.0.' },
   { file: 'salvador-dali-time.jpg',   caption: "Close-up Photo of Salvador Dali’s painting The Persistence of Memory | 110926-2497-jikatu, jikatu, CC BY-SA 2.0." },
   { file: 'SAM_The_Secure_Architecture_Model_(SAM).png',   caption: 'SAM: The Secure Architecture Model, Mancy A. Wake / Dorothy Hibernack / Lucas Lullaby, CC0, via Wikimedia Commons' },
 ];
