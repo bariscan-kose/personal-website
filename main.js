@@ -238,8 +238,9 @@ document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el)
   const canvas = document.getElementById('artCanvas1');
   const ctx    = canvas.getContext('2d');
   let W, H, t = 0;
-  const pts = [];
-  const N   = 55;
+  const pts  = [];
+  const N    = 65;
+  let mouse  = { x: -9999, y: -9999 };
 
   function noise(x, y, time) {
     return Math.sin(x * 0.008 + time * 0.7) * Math.cos(y * 0.009 + time * 0.5)
@@ -261,9 +262,21 @@ document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el)
       this.hue = 160 + Math.random() * 120;
     }
     update(time) {
-      const angle = noise(this.x, this.y, time) * Math.PI * 2;
-      this.x += Math.cos(angle) * 1.4;
-      this.y += Math.sin(angle) * 1.4;
+      let angle = noise(this.x, this.y, time) * Math.PI * 2;
+
+      // Cursor repulsion — deflects flow angle when mouse is nearby
+      const dx   = this.x - mouse.x;
+      const dy   = this.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const R    = 80;
+      if (dist < R && dist > 0.5) {
+        const push  = (1 - dist / R) * 2.5;
+        const away  = Math.atan2(dy, dx);
+        angle = angle + (away - angle) * push;
+      }
+
+      this.x += Math.cos(angle) * 1.6;
+      this.y += Math.sin(angle) * 1.6;
       this.age++;
       if (this.x < 0 || this.x > W || this.y < 0 || this.y > H || this.age > this.max) this.reset();
     }
@@ -298,6 +311,13 @@ document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el)
     t++;
     requestAnimationFrame(loop);
   }
+
+  canvas.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = (e.clientX - rect.left) * (W / rect.width);
+    mouse.y = (e.clientY - rect.top)  * (H / rect.height);
+  });
+  canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
 
   const resObs = new ResizeObserver(init);
   resObs.observe(canvas.parentElement);
