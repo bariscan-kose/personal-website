@@ -665,9 +665,7 @@ showSignoff(0);
     if (!isPlaying) return;
     startProgress();
     autoTimer = setTimeout(() => {
-      let next;
-      do { next = Math.floor(Math.random() * total); } while (next === current && total > 1);
-      showImage(next);
+      showImage(current + 1);
       scheduleNext();
     }, INTERVAL);
   }
