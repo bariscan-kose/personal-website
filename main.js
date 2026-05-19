@@ -15,12 +15,14 @@ window.addEventListener('scroll', () => {
 navToggle.addEventListener('click', () => {
   navToggle.classList.toggle('open');
   navLinks.classList.toggle('open');
+  document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
 });
 
 navLinks.addEventListener('click', e => {
   if (e.target.tagName === 'A') {
     navToggle.classList.remove('open');
     navLinks.classList.remove('open');
+    document.body.style.overflow = '';
   }
 });
 
@@ -181,10 +183,18 @@ typeRole();
 
   // Track cursor anywhere on the page
   window.addEventListener('mousemove', e => {
-    hasMouse  = true;
-    target.x  = e.clientX;
-    target.y  = e.clientY + window.scrollY - canvas.getBoundingClientRect().top - window.scrollY;
+    hasMouse = true;
+    target.x = e.clientX;
+    target.y = e.clientY - canvas.getBoundingClientRect().top;
   });
+
+  // Touch support
+  window.addEventListener('touchmove', e => {
+    hasMouse = true;
+    const t  = e.touches[0];
+    target.x = t.clientX;
+    target.y = t.clientY - canvas.getBoundingClientRect().top;
+  }, { passive: true });
 
   // When no cursor: slowly orbit around centre so it's always alive
   setInterval(() => {
@@ -318,6 +328,15 @@ document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el)
     mouse.y = (e.clientY - rect.top)  * (H / rect.height);
   });
   canvas.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const t    = e.touches[0];
+    mouse.x = (t.clientX - rect.left) * (W / rect.width);
+    mouse.y = (t.clientY - rect.top)  * (H / rect.height);
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { mouse.x = -9999; mouse.y = -9999; });
 
   const resObs = new ResizeObserver(init);
   resObs.observe(canvas.parentElement);

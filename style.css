@@ -1323,11 +1323,10 @@ footer p {
     justify-content: center;
     gap: 8px;
     z-index: 999;
+    overflow-y: auto;
   }
 
-  .nav-links.open {
-    display: flex;
-  }
+  .nav-links.open { display: flex; }
 
   .nav-links a {
     font-size: 1.1rem;
@@ -1357,16 +1356,40 @@ footer p {
 
   .timeline { padding-left: 20px; }
   .timeline-dot { left: -27px; }
-
   .timeline-card { padding: 20px; }
 
   .quote-display { padding: 36px 24px; }
-
   .section-title { font-size: 1.8rem; }
+
+  /* Gallery — don't force desktop height on mobile */
+  .encyclopedia-canvas-wrapper { min-height: 260px; }
+  #galleryImg { max-height: 60vw; }
+
+  /* Art labels — keep readable on small screens */
+  .art-label { font-size: 0.7rem; }
+
+  /* Posters — single column already handled; tighten padding */
+  .poster-label { padding: 14px 16px; }
+  .poster-label h3 { font-size: 0.95rem; }
+
+  /* Sign-off text a bit smaller */
+  .signoff-text { font-size: 1rem; }
+
+  /* Timeline bullets a bit smaller */
+  .timeline-bullets li { font-size: 0.88rem; }
 }
 
 @media (max-width: 480px) {
   .hero-name { font-size: 2rem; }
-  .projects-grid { grid-template-columns: 1fr; }
   .contact-link { padding: 14px 20px; font-size: 0.85rem; }
+
+  /* Stat cards — tighter on very small screens */
+  .stat-number { font-size: 1.8rem; }
+  .stat-label { font-size: 0.72rem; }
+
+  /* Skill tags — wrap more tightly */
+  .tag { font-size: 0.75rem; padding: 3px 10px; }
+
+  /* Timeline company text */
+  .timeline-company { font-size: 0.82rem; }
 }
