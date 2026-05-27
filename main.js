@@ -31,6 +31,30 @@ navSubBar.addEventListener('click', e => {
   }
 });
 
+// ── Finance iframe ────────────────────────────
+const financeFrame = document.getElementById('financeFrame');
+let frameLoaded = false;
+
+function loadFinanceFrame(src) {
+  financeFrame.src = src;
+  frameLoaded = true;
+  // Update active state in markets sub-nav
+  navLinksMarkets.querySelectorAll('a[data-frame-src]').forEach(a => {
+    a.classList.toggle('active', a.dataset.frameSrc === src);
+  });
+}
+
+// Markets sub-nav clicks → swap iframe src
+navLinksMarkets.addEventListener('click', e => {
+  const link = e.target.closest('a[data-frame-src]');
+  if (!link) return;
+  e.preventDefault();
+  loadFinanceFrame(link.dataset.frameSrc);
+  // Close mobile overlay (keep body overflow:hidden for markets mode)
+  navToggle.classList.remove('open');
+  navSubBar.classList.remove('open');
+});
+
 // ── Top-level tab switching ───────────────────
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -39,6 +63,15 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     const isMarkets = tab.dataset.tab === 'markets';
     navLinksPersonal.classList.toggle('active', !isMarkets);
     navLinksMarkets.classList.toggle('active',  isMarkets);
+
+    if (isMarkets) {
+      document.body.classList.add('markets-mode');
+      // Load overview on first open
+      if (!frameLoaded) loadFinanceFrame('https://finance.bariscankose.com/');
+    } else {
+      document.body.classList.remove('markets-mode');
+      document.body.style.overflow = '';
+    }
   });
 });
 

@@ -277,6 +277,31 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ═══════════════════════════════════════════════
+   MARKETS IFRAME OVERLAY
+═══════════════════════════════════════════════ */
+#financeFrame {
+  display: none;
+  position: fixed;
+  top: var(--nav-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: calc(100vh - var(--nav-h));
+  border: none;
+  z-index: 500;
+  background: var(--bg);
+}
+
+body.markets-mode #financeFrame {
+  display: block;
+}
+
+body.markets-mode {
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════
    BUTTONS
 ═══════════════════════════════════════════════ */
 .btn {
