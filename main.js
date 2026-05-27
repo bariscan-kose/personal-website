@@ -3,11 +3,25 @@
 /* ═══════════════════════════════════════════════
    NAV — TWO-TIER
 ═══════════════════════════════════════════════ */
-const navbar         = document.getElementById('navbar');
-const navToggle      = document.getElementById('navToggle');
-const navSubBar      = document.getElementById('navSubBar');
+const navbar           = document.getElementById('navbar');
+const navToggle        = document.getElementById('navToggle');
+const navSubBar        = document.getElementById('navSubBar');
 const navLinksPersonal = document.getElementById('navLinksPersonal');
 const navLinksMarkets  = document.getElementById('navLinksMarkets');
+
+// Check if Markets Analysis tab should be shown
+(async () => {
+  try {
+    const res  = await fetch('https://finance.bariscankose.com/api/markets-status', { cache: 'no-store' });
+    const data = await res.json();
+    if (!data.enabled) {
+      document.getElementById('tabMarkets')?.remove();
+    }
+  } catch {
+    // VPS unreachable — hide the tab gracefully
+    document.getElementById('tabMarkets')?.remove();
+  }
+})();
 
 // ── Scroll: backdrop + section highlight ──────
 window.addEventListener('scroll', () => {
