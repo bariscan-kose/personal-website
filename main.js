@@ -285,8 +285,9 @@ typeRole();
     });
   }, 2000);
 
-  if (typeof gsap === 'undefined') return; // will be handled by timeout above
-  clearTimeout(fallback);                  // GSAP loaded — cancel fallback
+  // Both must be present — if either CDN script failed, let the fallback reveal everything
+  if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+  clearTimeout(fallback);
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -311,11 +312,18 @@ typeRole();
     }
   });
 
-  /* ── Utility: reveal a selector individually ─ */
-  function revealEach(selector, vars) {
+  /*
+   * .reveal elements have opacity:0 in CSS.
+   * gsap.from() would read that as the "to" value → animates 0→0, stays invisible.
+   * Use fromTo() everywhere to explicitly set the end state to opacity:1.
+   */
+
+  /* ── Utility: fromTo reveal for individual elements ─ */
+  function revealEach(selector, fromVars, toExtra) {
     gsap.utils.toArray(selector).forEach(el => {
-      gsap.from(el, {
-        ...vars,
+      gsap.fromTo(el, fromVars, {
+        opacity: 1, x: 0, y: 0, scale: 1,
+        ...toExtra,
         clearProps: 'transform',
         scrollTrigger: { trigger: el, start: 'top 87%', toggleActions: 'play none none none' }
       });
@@ -323,23 +331,23 @@ typeRole();
   }
 
   /* ── Section titles (slide from left) ─────── */
-  revealEach('.section-title.reveal', { x: -42, opacity: 0, duration: 0.85, ease: 'power3.out' });
+  revealEach('.section-title.reveal',    { x: -42, opacity: 0 }, { duration: 0.85, ease: 'power3.out' });
 
   /* ── Section subtitles (fade up) ─────────── */
-  revealEach('.section-subtitle.reveal', { y: 24, opacity: 0, duration: 0.7, ease: 'power2.out' });
+  revealEach('.section-subtitle.reveal', { y: 24,  opacity: 0 }, { duration: 0.7,  ease: 'power2.out' });
 
   /* ── About text ──────────────────────────── */
-  revealEach('.about-text.reveal', { y: 32, opacity: 0, duration: 0.9, ease: 'power3.out' });
+  revealEach('.about-text.reveal',       { y: 32,  opacity: 0 }, { duration: 0.9,  ease: 'power3.out' });
 
   /* ── Stat cards (container + stagger) ─────── */
   ScrollTrigger.create({
     trigger: '.about-stats', start: 'top 84%', once: true,
     onEnter() {
       gsap.set('.about-stats.reveal', { opacity: 1 });
-      gsap.from('.about-stats .stat-card', {
-        y: 40, opacity: 0, duration: 0.65, stagger: 0.13,
-        ease: 'back.out(1.5)', clearProps: 'transform'
-      });
+      gsap.fromTo('.about-stats .stat-card',
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.65, stagger: 0.13, ease: 'back.out(1.5)', clearProps: 'transform' }
+      );
     }
   });
 
@@ -348,63 +356,64 @@ typeRole();
     trigger: '.skills-section', start: 'top 84%', once: true,
     onEnter() {
       gsap.set('.skills-section.reveal', { opacity: 1 });
-      gsap.from('.skill-group', {
-        y: 28, opacity: 0, duration: 0.65, stagger: 0.15,
-        ease: 'power2.out', clearProps: 'transform'
-      });
+      gsap.fromTo('.skill-group',
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.65, stagger: 0.15, ease: 'power2.out', clearProps: 'transform' }
+      );
     }
   });
 
-  /* ── Timeline items (slide from left, one-by-one) ─ */
+  /* ── Timeline items (slide from left) ────── */
   gsap.utils.toArray('.timeline-item.reveal').forEach(item => {
-    gsap.from(item, {
-      x: -50, opacity: 0, duration: 0.85, ease: 'power3.out', clearProps: 'transform',
-      scrollTrigger: { trigger: item, start: 'top 84%', toggleActions: 'play none none none' }
-    });
+    gsap.fromTo(item,
+      { x: -50, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.85, ease: 'power3.out', clearProps: 'transform',
+        scrollTrigger: { trigger: item, start: 'top 84%', toggleActions: 'play none none none' } }
+    );
   });
 
   /* ── Project cards (stagger upward) ─────────── */
-  gsap.from('.project-card.reveal', {
-    y: 52, opacity: 0, duration: 0.72, stagger: 0.09,
-    ease: 'power3.out', clearProps: 'transform',
-    scrollTrigger: { trigger: '.projects-grid', start: 'top 84%' }
-  });
+  gsap.fromTo('.project-card.reveal',
+    { y: 52, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.72, stagger: 0.09, ease: 'power3.out', clearProps: 'transform',
+      scrollTrigger: { trigger: '.projects-grid', start: 'top 84%' } }
+  );
 
   /* ── Art cards (stagger scale+fade) ──────────── */
-  gsap.from('.art-card.reveal', {
-    scale: 0.88, opacity: 0, duration: 0.78, stagger: 0.16,
-    ease: 'back.out(1.2)', clearProps: 'transform',
-    scrollTrigger: { trigger: '.art-grid', start: 'top 84%' }
-  });
+  gsap.fromTo('.art-card.reveal',
+    { scale: 0.88, opacity: 0 },
+    { scale: 1, opacity: 1, duration: 0.78, stagger: 0.16, ease: 'back.out(1.2)', clearProps: 'transform',
+      scrollTrigger: { trigger: '.art-grid', start: 'top 84%' } }
+  );
 
   /* ── Markets widgets ─────────────────────────── */
-  revealEach('.tradingview-wrapper.reveal', { y: 32, opacity: 0, duration: 0.8, ease: 'power2.out' });
-  revealEach('.news-widget-wrapper.reveal',  { y: 32, opacity: 0, duration: 0.8, ease: 'power2.out' });
+  revealEach('.tradingview-wrapper.reveal', { y: 32, opacity: 0 }, { duration: 0.8, ease: 'power2.out' });
+  revealEach('.news-widget-wrapper.reveal',  { y: 32, opacity: 0 }, { duration: 0.8, ease: 'power2.out' });
 
   /* ── Gallery wrapper ─────────────────────────── */
-  revealEach('.encyclopedia-wrapper.reveal', { y: 32, opacity: 0, duration: 0.8, ease: 'power2.out' });
+  revealEach('.encyclopedia-wrapper.reveal', { y: 32, opacity: 0 }, { duration: 0.8, ease: 'power2.out' });
 
   /* ── Poster cards (stagger up) ───────────────── */
-  gsap.from('.poster-card.reveal', {
-    y: 38, opacity: 0, duration: 0.78, stagger: 0.2,
-    ease: 'power2.out', clearProps: 'transform',
-    scrollTrigger: { trigger: '.posters-grid', start: 'top 84%' }
-  });
-  revealEach('.poster-credit.reveal', { y: 16, opacity: 0, duration: 0.6, ease: 'power2.out' });
+  gsap.fromTo('.poster-card.reveal',
+    { y: 38, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.78, stagger: 0.2, ease: 'power2.out', clearProps: 'transform',
+      scrollTrigger: { trigger: '.posters-grid', start: 'top 84%' } }
+  );
+  revealEach('.poster-credit.reveal', { y: 16, opacity: 0 }, { duration: 0.6, ease: 'power2.out' });
 
   /* ── Sign-offs & Quotes carousels ────────────── */
-  revealEach('.signoff-carousel.reveal', { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' });
-  revealEach('.quotes-carousel.reveal',  { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' });
+  revealEach('.signoff-carousel.reveal', { y: 40, opacity: 0 }, { duration: 0.9, ease: 'power3.out' });
+  revealEach('.quotes-carousel.reveal',  { y: 40, opacity: 0 }, { duration: 0.9, ease: 'power3.out' });
 
   /* ── Education cards (stagger) ───────────────── */
-  gsap.from('.education-card.reveal', {
-    y: 38, opacity: 0, duration: 0.78, stagger: 0.2,
-    ease: 'power2.out', clearProps: 'transform',
-    scrollTrigger: { trigger: '.education-grid', start: 'top 84%' }
-  });
+  gsap.fromTo('.education-card.reveal',
+    { y: 38, opacity: 0 },
+    { y: 0, opacity: 1, duration: 0.78, stagger: 0.2, ease: 'power2.out', clearProps: 'transform',
+      scrollTrigger: { trigger: '.education-grid', start: 'top 84%' } }
+  );
 
   /* ── Contact links ───────────────────────────── */
-  revealEach('.contact-links.reveal', { y: 28, opacity: 0, duration: 0.8, ease: 'power3.out' });
+  revealEach('.contact-links.reveal', { y: 28, opacity: 0 }, { duration: 0.8, ease: 'power3.out' });
 
   /* ── Stat counters (smooth GSAP tween) ──────── */
   document.querySelectorAll('.stat-number').forEach(el => {
