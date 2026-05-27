@@ -273,36 +273,155 @@ typeRole();
 })();
 
 /* ═══════════════════════════════════════════════
-   SCROLL REVEAL
+   GSAP — SCROLL ANIMATIONS, ENTRANCE & COUNTERS
 ═══════════════════════════════════════════════ */
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
-}, { threshold: 0.12 });
+(function initGSAP() {
+  // Safety net: if CDN didn't load, reveal everything after 2 s
+  const fallback = setTimeout(() => {
+    document.querySelectorAll('.reveal').forEach(el => { el.style.opacity = '1'; });
+    // Plain counter fallback
+    document.querySelectorAll('.stat-number').forEach(el => {
+      el.textContent = el.dataset.target;
+    });
+  }, 2000);
 
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  if (typeof gsap === 'undefined') return; // will be handled by timeout above
+  clearTimeout(fallback);                  // GSAP loaded — cancel fallback
 
-/* ═══════════════════════════════════════════════
-   STAT COUNTERS
-═══════════════════════════════════════════════ */
-const statObserver = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (!e.isIntersecting) return;
-    const el     = e.target;
-    const target = +el.dataset.target;
-    const dur    = 1500;
-    const step   = 16;
-    let current  = 0;
-    const inc    = target / (dur / step);
-    const timer  = setInterval(() => {
-      current += inc;
-      if (current >= target) { current = target; clearInterval(timer); }
-      el.textContent = Math.floor(current);
-    }, step);
-    statObserver.unobserve(el);
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ── Hero entrance (fires on page load) ───── */
+  gsap.timeline({ defaults: { ease: 'power3.out', clearProps: 'transform' } })
+    .from('.hero-photo-wrapper', { x: -55, opacity: 0, duration: 0.95 }, 0.15)
+    .from('.hero-greeting',      { x: 38,  opacity: 0, duration: 0.75 }, 0.35)
+    .from('.hero-name',          { x: 38,  opacity: 0, duration: 0.75 }, 0.48)
+    .from('.hero-roles',         { x: 38,  opacity: 0, duration: 0.65 }, 0.6)
+    .from('.hero-location',      { x: 38,  opacity: 0, duration: 0.6  }, 0.72)
+    .from('.hero-links',         { y: 20,  opacity: 0, duration: 0.65 }, 0.84)
+    .from('.scroll-indicator',   { y: 14,  opacity: 0, duration: 0.5  }, 0.96);
+
+  /* ── Hero parallax (scrub with scroll) ─────── */
+  gsap.to('.hero-content', {
+    yPercent: 16, ease: 'none',
+    scrollTrigger: {
+      trigger: '#hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 0.6,
+    }
   });
-}, { threshold: 0.5 });
 
-document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+  /* ── Utility: reveal a selector individually ─ */
+  function revealEach(selector, vars) {
+    gsap.utils.toArray(selector).forEach(el => {
+      gsap.from(el, {
+        ...vars,
+        clearProps: 'transform',
+        scrollTrigger: { trigger: el, start: 'top 87%', toggleActions: 'play none none none' }
+      });
+    });
+  }
+
+  /* ── Section titles (slide from left) ─────── */
+  revealEach('.section-title.reveal', { x: -42, opacity: 0, duration: 0.85, ease: 'power3.out' });
+
+  /* ── Section subtitles (fade up) ─────────── */
+  revealEach('.section-subtitle.reveal', { y: 24, opacity: 0, duration: 0.7, ease: 'power2.out' });
+
+  /* ── About text ──────────────────────────── */
+  revealEach('.about-text.reveal', { y: 32, opacity: 0, duration: 0.9, ease: 'power3.out' });
+
+  /* ── Stat cards (container + stagger) ─────── */
+  ScrollTrigger.create({
+    trigger: '.about-stats', start: 'top 84%', once: true,
+    onEnter() {
+      gsap.set('.about-stats.reveal', { opacity: 1 });
+      gsap.from('.about-stats .stat-card', {
+        y: 40, opacity: 0, duration: 0.65, stagger: 0.13,
+        ease: 'back.out(1.5)', clearProps: 'transform'
+      });
+    }
+  });
+
+  /* ── Skill groups (container + stagger) ───── */
+  ScrollTrigger.create({
+    trigger: '.skills-section', start: 'top 84%', once: true,
+    onEnter() {
+      gsap.set('.skills-section.reveal', { opacity: 1 });
+      gsap.from('.skill-group', {
+        y: 28, opacity: 0, duration: 0.65, stagger: 0.15,
+        ease: 'power2.out', clearProps: 'transform'
+      });
+    }
+  });
+
+  /* ── Timeline items (slide from left, one-by-one) ─ */
+  gsap.utils.toArray('.timeline-item.reveal').forEach(item => {
+    gsap.from(item, {
+      x: -50, opacity: 0, duration: 0.85, ease: 'power3.out', clearProps: 'transform',
+      scrollTrigger: { trigger: item, start: 'top 84%', toggleActions: 'play none none none' }
+    });
+  });
+
+  /* ── Project cards (stagger upward) ─────────── */
+  gsap.from('.project-card.reveal', {
+    y: 52, opacity: 0, duration: 0.72, stagger: 0.09,
+    ease: 'power3.out', clearProps: 'transform',
+    scrollTrigger: { trigger: '.projects-grid', start: 'top 84%' }
+  });
+
+  /* ── Art cards (stagger scale+fade) ──────────── */
+  gsap.from('.art-card.reveal', {
+    scale: 0.88, opacity: 0, duration: 0.78, stagger: 0.16,
+    ease: 'back.out(1.2)', clearProps: 'transform',
+    scrollTrigger: { trigger: '.art-grid', start: 'top 84%' }
+  });
+
+  /* ── Markets widgets ─────────────────────────── */
+  revealEach('.tradingview-wrapper.reveal', { y: 32, opacity: 0, duration: 0.8, ease: 'power2.out' });
+  revealEach('.news-widget-wrapper.reveal',  { y: 32, opacity: 0, duration: 0.8, ease: 'power2.out' });
+
+  /* ── Gallery wrapper ─────────────────────────── */
+  revealEach('.encyclopedia-wrapper.reveal', { y: 32, opacity: 0, duration: 0.8, ease: 'power2.out' });
+
+  /* ── Poster cards (stagger up) ───────────────── */
+  gsap.from('.poster-card.reveal', {
+    y: 38, opacity: 0, duration: 0.78, stagger: 0.2,
+    ease: 'power2.out', clearProps: 'transform',
+    scrollTrigger: { trigger: '.posters-grid', start: 'top 84%' }
+  });
+  revealEach('.poster-credit.reveal', { y: 16, opacity: 0, duration: 0.6, ease: 'power2.out' });
+
+  /* ── Sign-offs & Quotes carousels ────────────── */
+  revealEach('.signoff-carousel.reveal', { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' });
+  revealEach('.quotes-carousel.reveal',  { y: 40, opacity: 0, duration: 0.9, ease: 'power3.out' });
+
+  /* ── Education cards (stagger) ───────────────── */
+  gsap.from('.education-card.reveal', {
+    y: 38, opacity: 0, duration: 0.78, stagger: 0.2,
+    ease: 'power2.out', clearProps: 'transform',
+    scrollTrigger: { trigger: '.education-grid', start: 'top 84%' }
+  });
+
+  /* ── Contact links ───────────────────────────── */
+  revealEach('.contact-links.reveal', { y: 28, opacity: 0, duration: 0.8, ease: 'power3.out' });
+
+  /* ── Stat counters (smooth GSAP tween) ──────── */
+  document.querySelectorAll('.stat-number').forEach(el => {
+    const end = +el.dataset.target;
+    ScrollTrigger.create({
+      trigger: el, start: 'top 88%', once: true,
+      onEnter() {
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: end, duration: 2.2, ease: 'power2.out',
+          onUpdate() { el.textContent = Math.round(obj.val); }
+        });
+      }
+    });
+  });
+
+})();
 
 /* ═══════════════════════════════════════════════
    ART CANVAS 1 — NEURAL WEB (flow field)
