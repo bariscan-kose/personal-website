@@ -11,15 +11,14 @@ const navLinksMarkets  = document.getElementById('navLinksMarkets');
 
 // Check if Markets Analysis tab should be shown
 (async () => {
+  const tabMarkets = document.querySelector('.nav-tab[data-tab="markets"]');
   try {
     const res  = await fetch('https://finance.bariscankose.com/api/markets-status', { cache: 'no-store' });
     const data = await res.json();
-    if (!data.enabled) {
-      document.getElementById('tabMarkets')?.remove();
-    }
+    if (!data.enabled) tabMarkets?.remove();
   } catch {
     // VPS unreachable — hide the tab gracefully
-    document.getElementById('tabMarkets')?.remove();
+    tabMarkets?.remove();
   }
 })();
 
