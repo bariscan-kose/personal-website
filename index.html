@@ -17,23 +17,39 @@
 
   <!-- ───────────────────────── NAV ───────────────────────── -->
   <nav id="navbar">
+    <!-- Top row: logo + top-level tabs + hamburger -->
     <div class="nav-container">
       <a href="#hero" class="nav-logo">BK</a>
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#about">About</a></li>
-        <li><a href="#experience">Experience</a></li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#art">Creative Code</a></li>
-        <li><a href="#markets">Markets</a></li>
-        <li><a href="#encyclopedia">Gallery</a></li>
-        <li><a href="#thinking">Thinking</a></li>
-        <li><a href="#signoffs">Sign-Offs</a></li>
-        <li><a href="#quotes">Wisdom</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
+      <div class="nav-tabs" id="navTabs">
+        <button class="nav-tab active" data-tab="personal">Personal Website</button>
+        <button class="nav-tab" data-tab="markets">Markets Analysis</button>
+      </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
         <span></span><span></span><span></span>
       </button>
+    </div>
+    <!-- Sub-row: contextual links for the active tab -->
+    <div class="nav-sub-bar" id="navSubBar">
+      <div class="nav-sub-inner">
+        <ul class="nav-links nav-links--personal active" id="navLinksPersonal">
+          <li><a href="#about">About</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#art">Creative Code</a></li>
+          <li><a href="#markets">Markets</a></li>
+          <li><a href="#encyclopedia">Gallery</a></li>
+          <li><a href="#thinking">Thinking</a></li>
+          <li><a href="#signoffs">Sign-Offs</a></li>
+          <li><a href="#quotes">Wisdom</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <ul class="nav-links nav-links--markets" id="navLinksMarkets">
+          <li><a href="https://finance.bariscankose.com/" target="_blank" rel="noopener">S&amp;P 500 Overview</a></li>
+          <li><a href="https://finance.bariscankose.com/macro" target="_blank" rel="noopener">Macro</a></li>
+          <li><a href="https://finance.bariscankose.com/screener" target="_blank" rel="noopener">Screener</a></li>
+          <li><a href="https://finance.bariscankose.com/ranking" target="_blank" rel="noopener">Rankings</a></li>
+        </ul>
+      </div>
     </div>
   </nav>
 

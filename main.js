@@ -1,36 +1,53 @@
 'use strict';
 
 /* ═══════════════════════════════════════════════
-   NAV
+   NAV — TWO-TIER
 ═══════════════════════════════════════════════ */
-const navbar   = document.getElementById('navbar');
-const navToggle = document.getElementById('navToggle');
-const navLinks  = document.getElementById('navLinks');
+const navbar         = document.getElementById('navbar');
+const navToggle      = document.getElementById('navToggle');
+const navSubBar      = document.getElementById('navSubBar');
+const navLinksPersonal = document.getElementById('navLinksPersonal');
+const navLinksMarkets  = document.getElementById('navLinksMarkets');
 
+// ── Scroll: backdrop + section highlight ──────
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 40);
   highlightNav();
 }, { passive: true });
 
+// ── Hamburger: toggle sub-bar overlay on mobile ──
 navToggle.addEventListener('click', () => {
-  navToggle.classList.toggle('open');
-  navLinks.classList.toggle('open');
-  document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+  const open = navToggle.classList.toggle('open');
+  navSubBar.classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
 });
 
-navLinks.addEventListener('click', e => {
+// Close mobile overlay when a link is clicked
+navSubBar.addEventListener('click', e => {
   if (e.target.tagName === 'A') {
     navToggle.classList.remove('open');
-    navLinks.classList.remove('open');
+    navSubBar.classList.remove('open');
     document.body.style.overflow = '';
   }
 });
 
+// ── Top-level tab switching ───────────────────
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const isMarkets = tab.dataset.tab === 'markets';
+    navLinksPersonal.classList.toggle('active', !isMarkets);
+    navLinksMarkets.classList.toggle('active',  isMarkets);
+  });
+});
+
+// ── Section highlight (personal nav only) ────
 function highlightNav() {
   const sections = document.querySelectorAll('section[id]');
   const scrollY  = window.scrollY + 100;
   sections.forEach(section => {
-    const link = document.querySelector(`.nav-links a[href="#${section.id}"]`);
+    const link = navLinksPersonal.querySelector(`a[href="#${section.id}"]`);
     if (!link) return;
     const top = section.offsetTop, h = section.offsetHeight;
     link.classList.toggle('active', scrollY >= top && scrollY < top + h);
