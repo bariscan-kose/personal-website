@@ -137,7 +137,7 @@ function highlightNav() {
       tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v != null ? v.toFixed(1) : '' }, shared: false },
       annotations: { yaxis: [
         { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
-        { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
+        { y: 50, borderColor: '#4a5e80', borderWidth: 2, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
         { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
       ]},
     }).render();
