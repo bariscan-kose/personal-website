@@ -43,70 +43,231 @@ function highlightNav() {
 }
 
 /* ═══════════════════════════════════════════════
-   MARKET PULSE SNAPSHOT
-   Fetches from finance.bariscankose.com/api/snapshot
-   and renders an inline widget in #marketSnapshot.
+   MARKET WIDGET
+   Renders F&G index + S&P 500 yield chart
+   using data from finance.bariscankose.com/api/snapshot
 ═══════════════════════════════════════════════ */
 (async () => {
   const el = document.getElementById('marketSnapshot');
   if (!el) return;
 
-  const SNAPSHOT_URL = 'https://finance.bariscankose.com/api/snapshot';
-
-  // Rating → CSS class slug + display label
-  function ratingMeta(rating) {
-    const r = (rating || '').toLowerCase();
-    if (r.includes('extreme') && r.includes('fear'))  return { cls: 'extreme-fear',  label: 'Extreme Fear'  };
-    if (r.includes('fear'))                            return { cls: 'fear',           label: 'Fear'          };
-    if (r.includes('extreme') && r.includes('greed')) return { cls: 'extreme-greed', label: 'Extreme Greed' };
-    if (r.includes('greed'))                           return { cls: 'greed',          label: 'Greed'         };
-    return { cls: 'neutral', label: 'Neutral' };
+  // ── Colour helpers ────────────────────────────
+  function scoreColor(s) {
+    if (s == null || s === 0) return '#4a5e80';
+    if (s >= 75) return '#22c55e';
+    if (s >= 55) return '#84cc16';
+    if (s >= 45) return '#eab308';
+    if (s >= 25) return '#f97316';
+    return '#ef4444';
   }
 
+  function ratingMeta(rating) {
+    const r = (rating || '').toLowerCase();
+    if (r.includes('extreme') && r.includes('greed')) return { pillCls: 'mw-pill-eg', label: 'Extreme Greed', hex: '#22c55e' };
+    if (r.includes('greed'))                           return { pillCls: 'mw-pill-g',  label: 'Greed',         hex: '#84cc16' };
+    if (r.includes('extreme') && r.includes('fear'))  return { pillCls: 'mw-pill-ef', label: 'Extreme Fear',  hex: '#ef4444' };
+    if (r.includes('fear'))                            return { pillCls: 'mw-pill-f',  label: 'Fear',          hex: '#f97316' };
+    return { pillCls: 'mw-pill-n', label: 'Neutral', hex: '#eab308' };
+  }
+
+  // ── Gauge SVG (ported from finance app) ──────
+  function buildGauge(score) {
+    const cx = 155, cy = 145, R = 130, ri = 88;
+    const sc = Math.max(0.3, Math.min(99.7, score ?? 50));
+    const s2a = s => 180 * (1 - s / 100);
+    const pol = (radius, deg) => {
+      const rad = deg * Math.PI / 180;
+      return [cx + radius * Math.cos(rad), cy - radius * Math.sin(rad)];
+    };
+    const p = v => v.toFixed(2);
+    function donutPath(s1, s2, ro, rii) {
+      const a1 = s2a(s1), a2 = s2a(s2);
+      const [x1o, y1o] = pol(ro, a1), [x2o, y2o] = pol(ro, a2);
+      const [x1i, y1i] = pol(rii, a1), [x2i, y2i] = pol(rii, a2);
+      return `M ${p(x1o)},${p(y1o)} A ${ro} ${ro} 0 0 0 ${p(x2o)},${p(y2o)} L ${p(x2i)},${p(y2i)} A ${rii} ${rii} 0 0 1 ${p(x1i)},${p(y1i)} Z`;
+    }
+    const SEGS = [[0,25,'#dc2626'],[25,45,'#ea580c'],[45,55,'#ca8a04'],[55,75,'#4d7c0f'],[75,100,'#15803d']];
+    let out = `<defs><filter id="gns" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="1" stdDeviation="2.5" flood-color="#000" flood-opacity="0.55"/></filter></defs>`;
+    for (const [s1, s2, col] of SEGS) out += `<path d="${donutPath(s1, s2, R, ri)}" fill="${col}"/>`;
+    out += `<path d="${donutPath(sc, 100, R + 1, ri - 1)}" fill="#030712" opacity="0.86"/>`;
+    for (const b of [25, 45, 55, 75]) {
+      const a = s2a(b), [x1,y1] = pol(ri-3,a), [x2,y2] = pol(R+3,a);
+      out += `<line x1="${p(x1)}" y1="${p(y1)}" x2="${p(x2)}" y2="${p(y2)}" stroke="#030712" stroke-width="4" stroke-linecap="round"/>`;
+    }
+    for (const t of [0, 25, 50, 75, 100]) {
+      const a = s2a(t), [x1,y1] = pol(R+6,a), [x2,y2] = pol(R+14,a);
+      out += `<line x1="${p(x1)}" y1="${p(y1)}" x2="${p(x2)}" y2="${p(y2)}" stroke="#4a5e80" stroke-width="2" stroke-linecap="round"/>`;
+      const [lx, ly] = pol(R+24, a);
+      out += `<text x="${p(lx)}" y="${p(ly)}" text-anchor="middle" dominant-baseline="middle" fill="#6888b0" font-size="11" font-family="JetBrains Mono,monospace">${t}</text>`;
+    }
+    const na = s2a(sc), [tx,ty] = pol(R-10,na), [lx,ly] = pol(10,na+90), [rx,ry] = pol(10,na-90);
+    out += `<polygon points="${p(tx)},${p(ty)} ${p(lx)},${p(ly)} ${p(rx)},${p(ry)}" fill="#f1f5f9" filter="url(#gns)"/>`;
+    out += `<circle cx="${cx}" cy="${cy}" r="8" fill="#080d14" stroke="#4a5e80" stroke-width="2"/>`;
+    return `<svg viewBox="0 0 310 160" width="100%">${out}</svg>`;
+  }
+
+  // ── F&G history chart (ApexCharts) ───────────
+  function buildFGChart(history, hex) {
+    const el2 = document.getElementById('wFgChart');
+    if (!el2 || !history?.length) return;
+    new ApexCharts(el2, {
+      series: [{ name: 'Fear & Greed', data: history.map(pt => ({ x: pt.t, y: pt.v })) }],
+      chart: { type: 'area', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      theme: { mode: 'dark' },
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth', width: 1.5, colors: [hex] },
+      fill: { type: 'gradient', gradient: { opacityFrom: .22, opacityTo: 0, stops: [0,100], gradientToColors: ['transparent'] }, colors: [hex] },
+      xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { min: 0, max: 100, show: false },
+      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
+      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) } },
+      annotations: {
+        yaxis: [
+          { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear', style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+          { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+          { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+        ],
+      },
+    }).render();
+  }
+
+  // ── Yields chart (ApexCharts) ─────────────────
+  function buildYieldsChart(dates, ey, by) {
+    const el2 = document.getElementById('wYieldsChart');
+    if (!el2 || !dates?.length) return;
+    const toTs = d => new Date(d).getTime();
+    const eySeries = dates.map((d, i) => ({ x: toTs(d), y: ey[i] })).filter(p => p.y != null);
+    const bySeries = dates.map((d, i) => ({ x: toTs(d), y: by[i] })).filter(p => p.y != null);
+    new ApexCharts(el2, {
+      series: [
+        { name: 'Earnings Yield', data: eySeries },
+        { name: 'Book Yield',     data: bySeries },
+      ],
+      chart: { type: 'line', height: 200, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      theme: { mode: 'dark' },
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth', width: [2, 2], colors: ['#00d4ff', '#7c3aed'] },
+      xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { labels: { formatter: v => v.toFixed(1) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
+      legend: { labels: { colors: ['#00d4ff', '#7c3aed'] }, fontSize: '11px' },
+      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
+      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(2) + '%' } },
+    }).render();
+  }
+
+  // ── Component mini-card row ───────────────────
+  const COMP_DEFS = [
+    { key: 'momentum',  name: 'Market Momentum' },
+    { key: 'strength',  name: 'Price Strength'  },
+    { key: 'breadth',   name: 'Price Breadth'   },
+    { key: 'put_call',  name: 'Put / Call'       },
+    { key: 'vix',       name: 'Volatility'       },
+    { key: 'junk_bond', name: 'Junk Bond'        },
+    { key: 'safe_haven',name: 'Safe Haven'       },
+  ];
+
+  function buildCompRow(components) {
+    const comps = components || {};
+    return COMP_DEFS.map(def => {
+      const c   = comps[def.key];
+      const sc  = c?.score ?? null;
+      const col = scoreColor(sc);
+      const rMeta = sc != null ? ratingMeta(c?.rating || '') : null;
+      return `
+        <div class="mw-comp-mini">
+          <div class="mw-comp-name">${def.name}</div>
+          <div class="mw-comp-score" style="color:${col}">${sc != null ? sc.toFixed(0) : '—'}</div>
+          <div class="mw-comp-bar-track">
+            <div class="mw-comp-bar-fill" style="width:${sc ?? 0}%;background:${col}"></div>
+          </div>
+          <div class="mw-comp-rating">${rMeta ? rMeta.label : '—'}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Fetch & render ────────────────────────────
   try {
-    const data = await fetch(SNAPSHOT_URL, { cache: 'no-store' }).then(r => r.json());
+    const data = await fetch('https://finance.bariscankose.com/api/snapshot', { cache: 'no-store' }).then(r => r.json());
 
-    const fg    = data.fear_greed;   // {score, rating} or null
-    const sp    = data.sp500;        // {advancing_pct, median_pe, num_companies, as_of}
+    const fg  = data.fear_greed;
+    const yld = data.yields;
 
-    const rm    = fg ? ratingMeta(fg.rating) : { cls: 'neutral', label: '—' };
-    const score = fg?.score != null ? fg.score.toFixed(0) : '—';
+    // F&G panel
+    const rm    = ratingMeta(fg?.rating || '');
+    const score = fg?.score ?? 50;
+    const col   = rm.hex;
 
-    const advPct = sp?.advancing_pct != null ? sp.advancing_pct.toFixed(1) + '%' : '—';
-    const pe     = sp?.median_pe     != null ? sp.median_pe.toFixed(1)           : '—';
-    const n      = sp?.num_companies != null ? sp.num_companies                  : '—';
-    const asOf   = sp?.as_of ? sp.as_of.slice(0, 10) : '';
+    const PREVS = [
+      { lbl: 'Prev Close', val: fg?.previous_close },
+      { lbl: '1 Week',     val: fg?.previous_week  },
+      { lbl: '1 Month',    val: fg?.previous_month },
+      { lbl: '1 Year',     val: fg?.previous_year  },
+    ];
+    const prevHtml = PREVS.map(p => {
+      const diff = p.val != null ? score - p.val : null;
+      const cls  = diff == null ? '' : diff > 0 ? 'pos' : diff < 0 ? 'neg' : '';
+      const arrow = diff == null ? '' : diff > 0 ? ' ↑' : ' ↓';
+      return `
+        <div class="mw-prev-item">
+          <span class="mw-prev-lbl">${p.lbl}</span>
+          <span class="mw-prev-val">${p.val != null ? p.val.toFixed(0) : '—'}</span>
+          <span class="mw-prev-diff ${cls}">${diff != null ? (diff > 0 ? '+' : '') + diff.toFixed(0) + arrow : ''}</span>
+        </div>`;
+    }).join('');
+
+    // Yields panel
+    const eyCur = yld?.ey_current != null ? yld.ey_current.toFixed(2) + '%' : '—';
+    const byCur = yld?.by_current != null ? yld.by_current.toFixed(2) + '%' : '—';
 
     el.innerHTML = `
-      <div class="snap-card">
-        <span class="snap-label">Fear &amp; Greed Index</span>
-        <span class="snap-value">${score}</span>
-        <span class="snap-badge ${rm.cls}">${rm.label}</span>
-      </div>
-      <div class="snap-card">
-        <span class="snap-label">S&amp;P 500 Pulse${asOf ? ' · ' + asOf : ''}</span>
-        <div class="snap-stats">
-          <div class="snap-stat-row">
-            <span class="snap-stat-key">Stocks above 30d ago</span>
-            <span class="snap-stat-val">${advPct}</span>
+      <!-- ── Fear & Greed panel ── -->
+      <div class="mw-panel">
+        <div class="mw-panel-hdr">
+          <span class="mw-panel-title">😨 Fear &amp; Greed Index</span>
+          <a class="mw-panel-link" href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener">alternative.me ↗</a>
+        </div>
+        <div class="mw-fg-main">
+          <div class="mw-gauge-wrap">
+            ${buildGauge(score)}
+            <div class="mw-fg-score-row">
+              <span class="mw-fg-score-num" style="color:${col}">${score.toFixed(1)}</span>
+              <span class="mw-pill ${rm.pillCls}">${rm.label}</span>
+            </div>
+            <div class="mw-fg-prevs">${prevHtml}</div>
           </div>
-          <div class="snap-stat-row">
-            <span class="snap-stat-key">Median trailing P/E</span>
-            <span class="snap-stat-val">${pe}×</span>
-          </div>
-          <div class="snap-stat-row">
-            <span class="snap-stat-key">Companies tracked</span>
-            <span class="snap-stat-val">${n}</span>
+          <div class="mw-fg-chart-side">
+            <div class="mw-chart-label">📅 Last 12 months</div>
+            <div id="wFgChart"></div>
           </div>
         </div>
+        <div class="mw-comps-row">${buildCompRow(fg?.components)}</div>
       </div>
-      <div class="snap-footer">
-        <a href="https://finance.bariscankose.com" target="_blank" rel="noopener">
-          View full analysis → finance.bariscankose.com
-        </a>
+
+      <!-- ── Yields panel ── -->
+      <div class="mw-panel">
+        <div class="mw-panel-hdr">
+          <span class="mw-panel-title">📊 S&amp;P 500 Median Yields · 3 Years</span>
+          <a class="mw-panel-link" href="https://finance.bariscankose.com" target="_blank" rel="noopener">Full analysis ↗</a>
+        </div>
+        <div class="mw-yields-stats">
+          <div class="mw-yield-stat">
+            <span class="mw-yield-lbl">Earnings Yield</span>
+            <span class="mw-yield-val" style="color:#00d4ff">${eyCur}</span>
+          </div>
+          <div class="mw-yield-stat">
+            <span class="mw-yield-lbl">Book Yield</span>
+            <span class="mw-yield-val" style="color:#7c3aed">${byCur}</span>
+          </div>
+        </div>
+        <div id="wYieldsChart"></div>
       </div>`;
+
+    // Render charts after DOM is updated
+    buildFGChart(fg?.history, col);
+    buildYieldsChart(yld?.dates, yld?.earnings_yield, yld?.book_yield);
+
   } catch {
-    el.innerHTML = '';   // silently hide widget if VPS is unreachable
+    el.innerHTML = '';   // silently hide if VPS unreachable
   }
 })();
 
@@ -395,8 +556,7 @@ typeRole();
   );
 
   /* ── Markets widgets ─────────────────────────── */
-  revealEach('.tradingview-wrapper.reveal', { y: 32, opacity: 0 }, { duration: 0.8, ease: 'power2.out' });
-  revealEach('.news-widget-wrapper.reveal',  { y: 32, opacity: 0 }, { duration: 0.8, ease: 'power2.out' });
+  // (TradingView widgets removed — market widget revealed via .market-snapshot.reveal above)
 
   /* ── Gallery wrapper ─────────────────────────── */
   revealEach('.encyclopedia-wrapper.reveal', { y: 32, opacity: 0 }, { duration: 0.8, ease: 'power2.out' });

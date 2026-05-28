@@ -854,126 +854,225 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
    MARKETS
 ═══════════════════════════════════════════════ */
 
-/* ── Market Pulse snapshot widget ────────────── */
+/* ── Market widget (F&G + Yields) ─────────────── */
 .market-snapshot {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 48px;
+  margin-bottom: 0;
 }
 
-.snap-card {
+.snap-loading {
+  text-align: center;
+  padding: 48px 32px;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* Shared panel wrapper */
+.mw-panel {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 28px 32px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+}
+.mw-panel:last-child { margin-bottom: 0; }
+
+/* Panel header row */
+.mw-panel-hdr {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.snap-label {
+.mw-panel-title {
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--text-dim);
 }
 
-.snap-value {
+.mw-panel-link {
+  font-size: 0.72rem;
+  color: var(--cyan);
+  opacity: .65;
+  transition: opacity var(--trans);
+}
+.mw-panel-link:hover { opacity: 1; text-decoration: underline; }
+
+/* ── F&G layout ── */
+.mw-fg-main {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.mw-gauge-wrap { min-width: 0; }
+
+.mw-fg-score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -2px 0 8px 6px;
+}
+
+.mw-fg-score-num {
   font-family: var(--font-head);
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  line-height: 1.1;
-  color: var(--text);
+  line-height: 1;
 }
 
-.snap-badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 3px 10px;
+/* Rating pill */
+.mw-pill {
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 3px 9px;
   border-radius: 20px;
-  margin-top: 4px;
-  width: fit-content;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.mw-pill-ef { background: rgba(239,68,68,.15);  color: #ef4444; }
+.mw-pill-f  { background: rgba(249,115,22,.15); color: #f97316; }
+.mw-pill-n  { background: rgba(234,179,8,.15);  color: #eab308; }
+.mw-pill-g  { background: rgba(132,204,22,.15); color: #84cc16; }
+.mw-pill-eg { background: rgba(34,197,94,.15);  color: #22c55e; }
+
+/* Previous values grid */
+.mw-fg-prevs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-left: 6px;
 }
 
-.snap-badge.extreme-fear  { background: rgba(239,68,68,.15);  color: #f87171; }
-.snap-badge.fear          { background: rgba(249,115,22,.15); color: #fb923c; }
-.snap-badge.neutral       { background: rgba(245,158,11,.15); color: #fbbf24; }
-.snap-badge.greed         { background: rgba(132,204,22,.15); color: #a3e635; }
-.snap-badge.extreme-greed { background: rgba(16,185,129,.15); color: #34d399; }
-
-.snap-stats {
+.mw-prev-item {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 1px;
 }
 
-.snap-stat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
+.mw-prev-lbl {
+  font-size: .65rem;
+  color: var(--text-dim);
 }
 
-.snap-stat-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-.snap-stat-key {
-  font-size: 0.82rem;
+.mw-prev-val {
+  font-family: var(--font-mono);
+  font-size: .78rem;
   color: var(--text-muted);
 }
 
-.snap-stat-val {
+.mw-prev-diff {
   font-family: var(--font-mono);
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text);
+  font-size: .68rem;
+  font-weight: 600;
 }
+.mw-prev-diff.pos { color: #22c55e; }
+.mw-prev-diff.neg { color: #ef4444; }
 
-.snap-footer {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding-top: 4px;
-}
+/* Chart side */
+.mw-fg-chart-side { min-width: 0; }
 
-.snap-footer a {
-  font-size: 0.82rem;
-  color: var(--cyan);
-  text-decoration: none;
-  opacity: 0.8;
-  transition: opacity var(--trans);
-}
-.snap-footer a:hover { opacity: 1; text-decoration: underline; }
-
-.snap-loading {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 32px;
+.mw-chart-label {
+  font-size: .68rem;
   color: var(--text-dim);
-  font-size: 0.85rem;
+  margin-bottom: 4px;
 }
 
-@media (max-width: 600px) {
-  .market-snapshot {
+/* Component mini-cards — 1 horizontal row */
+.mw-comps-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.mw-comp-mini {
+  flex: 1 0 100px;
+  min-width: 100px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mw-comp-name {
+  font-size: .6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--text-dim);
+  line-height: 1.2;
+}
+
+.mw-comp-score {
+  font-family: var(--font-mono);
+  font-size: .82rem;
+  font-weight: 700;
+}
+
+.mw-comp-bar-track {
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mw-comp-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.mw-comp-rating {
+  font-size: .6rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* ── Yields layout ── */
+.mw-yields-stats {
+  display: flex;
+  gap: 28px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.mw-yield-stat { display: flex; flex-direction: column; gap: 2px; }
+
+.mw-yield-lbl {
+  font-size: .65rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.mw-yield-val {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 680px) {
+  .mw-fg-main {
     grid-template-columns: 1fr;
   }
 }
-
-.tradingview-wrapper {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: 48px;
-}
-
-.news-widget-wrapper {
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+@media (max-width: 480px) {
+  .mw-panel { padding: 16px 18px; }
+  .mw-comp-mini { min-width: 82px; }
 }
 
 /* ═══════════════════════════════════════════════
