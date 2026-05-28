@@ -106,7 +106,27 @@ function highlightNav() {
     return `<svg viewBox="0 0 310 160" width="100%">${out}</svg>`;
   }
 
-  // ── F&G history chart (ApexCharts) ───────────
+  // ── Gradient helper: split fill at a threshold value ──
+  function thresholdFill(vals, threshold, aboveColor, belowColor) {
+    const yMin = Math.min(...vals);
+    const yMax = Math.max(...vals);
+    const range = Math.max(yMax - yMin, 0.001);
+    const pct   = Math.max(0, Math.min(100, (yMax - threshold) / range * 100));
+    return {
+      type: 'gradient',
+      gradient: {
+        type: 'vertical',
+        colorStops: [[
+          { offset: 0,         color: aboveColor, opacity: 0.38 },
+          { offset: pct - 0.1, color: aboveColor, opacity: 0.18 },
+          { offset: pct + 0.1, color: belowColor, opacity: 0.18 },
+          { offset: 100,       color: belowColor, opacity: 0.05 },
+        ]],
+      },
+    };
+  }
+
+  // ── F&G history chart ─────────────────────────
   function buildFGChart(history, hex) {
     const el2 = document.getElementById('wFgChart');
     if (!el2 || !history?.length) return;
@@ -116,32 +136,34 @@ function highlightNav() {
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 1.5, colors: [hex] },
-      fill: { type: 'gradient', gradient: { opacityFrom: .22, opacityTo: 0, stops: [0,100], gradientToColors: ['transparent'] }, colors: [hex] },
+      fill: thresholdFill([0, 100], 50, '#22c55e', '#ef4444'),
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) } },
-      annotations: {
-        yaxis: [
-          { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear', style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
-          { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
-          { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
-        ],
-      },
+      annotations: { yaxis: [
+        { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear', style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+        { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+        { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+      ]},
     }).render();
   }
 
   // ── Yields charts (separate panels) ──────────
-  function buildYieldChart(elId, series, color, name) {
+  function buildYieldChart(elId, series, color, name, mean) {
     const el2 = document.getElementById(elId);
     if (!el2 || !series?.length) return;
+    const vals = series.map(p => p.y).filter(v => v != null);
+    const fill = mean != null
+      ? thresholdFill(vals, mean, '#22c55e', '#ef4444')
+      : { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0,100] }, colors: [color] };
     new ApexCharts(el2, {
       series: [{ name, data: series }],
       chart: { type: 'area', height: 150, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 2, colors: [color] },
-      fill: { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0, 100] }, colors: [color] },
+      fill,
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: v => v.toFixed(1) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
@@ -160,17 +182,21 @@ function highlightNav() {
   function buffettZone(val) {
     return BUFFETT_ZONES.find(z => val < z.max) || BUFFETT_ZONES[BUFFETT_ZONES.length - 1];
   }
-  function buildBuffettChart(series, zoneColor) {
+  function buildBuffettChart(series, zoneColor, mean) {
     const el2 = document.getElementById('wBuffettChart');
     if (!el2 || !series?.length) return;
     const data = series.map(p => ({ x: new Date(p.date).getTime(), y: p.value }));
+    const vals = data.map(p => p.y);
+    const fill = mean != null
+      ? thresholdFill(vals, mean, '#22c55e', '#ef4444')
+      : { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0,100] }, colors: [zoneColor] };
     new ApexCharts(el2, {
       series: [{ name: 'Market Cap / GDP', data }],
       chart: { type: 'area', height: 140, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
       stroke: { curve: 'smooth', width: 2, colors: [zoneColor] },
-      fill: { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0, 100] }, colors: [zoneColor] },
+      fill,
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: v => v.toFixed(0) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
@@ -185,13 +211,13 @@ function highlightNav() {
 
   // ── Component mini-card row ───────────────────
   const COMP_DEFS = [
-    { key: 'momentum',  name: 'Market Momentum' },
-    { key: 'strength',  name: 'Price Strength'  },
-    { key: 'breadth',   name: 'Price Breadth'   },
-    { key: 'put_call',  name: 'Put / Call'       },
-    { key: 'vix',       name: 'Volatility'       },
-    { key: 'junk_bond', name: 'Junk Bond'        },
-    { key: 'safe_haven',name: 'Safe Haven'       },
+    { key: 'momentum',   name: 'Market Momentum', sub: 'S&P 500 vs 125-day avg'          },
+    { key: 'strength',   name: 'Price Strength',  sub: '52-week highs vs lows'            },
+    { key: 'breadth',    name: 'Price Breadth',   sub: 'McClellan volume summation'        },
+    { key: 'put_call',   name: 'Put / Call',       sub: 'Put-to-call options ratio'        },
+    { key: 'vix',        name: 'Volatility',       sub: 'VIX vs 50-day avg'               },
+    { key: 'junk_bond',  name: 'Junk Bond',        sub: 'Junk vs investment-grade demand'  },
+    { key: 'safe_haven', name: 'Safe Haven',       sub: 'Stocks vs bonds return'           },
   ];
 
   function buildCompRow(components) {
@@ -204,6 +230,7 @@ function highlightNav() {
       return `
         <div class="mw-comp-mini">
           <div class="mw-comp-name">${def.name}</div>
+          <div class="mw-comp-sub">${def.sub}</div>
           <div class="mw-comp-score" style="color:${col}">${sc != null ? sc.toFixed(0) : '—'}</div>
           <div class="mw-comp-bar-track">
             <div class="mw-comp-bar-fill" style="width:${sc ?? 0}%;background:${col}"></div>
@@ -225,7 +252,7 @@ function highlightNav() {
     { key: 'revenue_growth_pct',  label: 'Rev Gr',    fmt: v => v != null ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—' },
     { key: 'earnings_growth_pct', label: 'EPS Gr',    fmt: v => v != null ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—' },
     { key: 'debt_to_equity',      label: 'D/E %',     fmt: v => v != null ? (v * 100).toFixed(0) + '%' : '—' },
-    { key: 'peg_ratio',           label: 'PEG',       fmt: v => v != null ? v.toFixed(2) : '—' },
+    { key: 'peg_ratio',           label: '1/PEG %',   fmt: v => (v != null && v > 0) ? (100 / v).toFixed(1) + '%' : '—' },
     { key: 'fcf_ev_yield',        label: 'FCF/EV',    fmt: v => v != null ? v.toFixed(2) + '%' : '—' },
   ];
 
@@ -242,7 +269,6 @@ function highlightNav() {
         <td class="mw-td-ticker"><a href="https://finance.bariscankose.com/stock/${s.ticker}" target="_blank" rel="noopener">${s.ticker}</a></td>
         <td class="mw-td-name" title="${s.name || ''}">${s.name || '—'}</td>
         <td class="mw-td-sector">${s.sector || '—'}</td>
-        <td class="mw-td-score">${s.quality_score != null ? parseFloat(s.quality_score).toFixed(1) : '—'}</td>
         ${cells}
       </tr>`;
     }).join('');
@@ -252,12 +278,13 @@ function highlightNav() {
       <div class="mw-table-wrap">
         <table class="mw-stocks-table">
           <thead><tr>
-            <th>#</th><th>Ticker</th><th>Company</th><th>Sector</th><th>Score</th>
+            <th>#</th><th>Ticker</th><th>Company</th><th>Sector</th>
             ${headers}
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
-      </div>`;
+      </div>
+      <p class="mw-table-legend">EY = Earnings Yield (100 / P·E) &nbsp;·&nbsp; BY = Book Yield (100 / P·B) — higher means cheaper relative to earnings or book value &nbsp;·&nbsp; 1/PEG = earnings growth per unit of valuation (higher = better) &nbsp;·&nbsp; D/E = Debt-to-Equity as % &nbsp;·&nbsp; FCF/EV = Free Cash Flow / Enterprise Value yield</p>`;
   }
 
   // ── Fetch & render ────────────────────────────
@@ -363,10 +390,16 @@ function highlightNav() {
         ${buildStocksTable(rankings)}
       </div>`;
 
+    // Compute means for threshold shading
+    const mean = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
+    const eyMean = mean(eySeries.map(p => p.y));
+    const byMean = mean(bySeries.map(p => p.y));
+    const biMean = bi?.series?.length ? mean(bi.series.map(p => p.value)) : null;
+
     // Render charts (errors here must not wipe the widget)
-    try { buildBuffettChart(bi?.series, bz?.color ?? '#4a5e80'); } catch {}
-    try { buildYieldChart('wEYChart', eySeries, '#00d4ff', 'Earnings Yield'); } catch {}
-    try { buildYieldChart('wBYChart', bySeries, '#7c3aed', 'Book Yield'); } catch {}
+    try { buildBuffettChart(bi?.series, bz?.color ?? '#4a5e80', biMean); } catch {}
+    try { buildYieldChart('wEYChart', eySeries, '#00d4ff', 'Earnings Yield', eyMean); } catch {}
+    try { buildYieldChart('wBYChart', bySeries, '#7c3aed', 'Book Yield', byMean); } catch {}
     try { buildFGChart(fg?.history, col); } catch {}
 
   } catch {

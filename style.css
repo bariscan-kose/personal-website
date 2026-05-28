@@ -984,6 +984,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   line-height: 1.2;
 }
 
+.mw-comp-sub {
+  font-size: .58rem;
+  color: var(--text-dim);
+  opacity: .6;
+  line-height: 1.2;
+  white-space: normal;
+}
+
 .mw-comp-score {
   font-family: var(--font-mono);
   font-size: .82rem;
@@ -1052,6 +1060,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   flex-wrap: wrap;
   gap: 4px 18px;
   margin-top: 10px;
+  justify-content: center;
 }
 
 .mw-bz-row {
@@ -1070,6 +1079,16 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 .mw-bz-label {
   font-size: .65rem;
   color: var(--text-dim);
+}
+
+/* ── Table legend ── */
+.mw-table-legend {
+  font-size: .65rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
 }
 
 /* ── Stock rankings table ── */
