@@ -143,7 +143,19 @@ function highlightNav() {
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
-      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) }, enabledOnSeries: [0] },
+      tooltip: {
+        theme: 'dark',
+        custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+          const val  = series[0][dataPointIndex];
+          const ts   = w.globals.seriesX[0][dataPointIndex];
+          const date = new Date(ts).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: '2-digit' });
+          const col  = w.globals.colors[0];
+          return `<div style="padding:6px 10px;font-size:12px">` +
+            `<span style="color:${col}">&#9679;</span> ` +
+            `<b>${date}</b>: ${(+val).toFixed(1)}` +
+            `</div>`;
+        },
+      },
       annotations: { yaxis: [
         { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
         { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
