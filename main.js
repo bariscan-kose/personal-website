@@ -152,7 +152,7 @@ function highlightNav() {
           const col  = w.globals.colors[0];
           return `<div style="padding:6px 10px;font-size:12px">` +
             `<span style="color:${col}">&#9679;</span> ` +
-            `<b>${date}</b>: ${(+val).toFixed(1)}` +
+            `<b>Fear and Greed</b>: ${(+val).toFixed(1)}` +
             `</div>`;
         },
       },
@@ -209,7 +209,7 @@ function highlightNav() {
       dataLabels: { enabled: false },
       colors: [zoneColor],
       stroke: { curve: 'smooth', width: 2 },
-      fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.75, opacityTo: 0.15 } },
+      fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.25, opacityTo: 0.02 } },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: v => v.toFixed(0) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
