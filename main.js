@@ -329,21 +329,19 @@ function highlightNav() {
     const eyCur = yld?.ey_current != null ? yld.ey_current.toFixed(2) + '%' : '—';
     const byCur = yld?.by_current != null ? yld.by_current.toFixed(2) + '%' : '—';
 
-    // Invert raw ratio series → yield (100/v), compute mean over full history,
-    // filter display to last 20 years for EY (monthly since 1871) and all for BY (~25yr)
+    // Invert raw ratio series → yield (100/v), compute mean over the display
+    // window only (so mean matches what the chart actually shows).
     function prepYieldSeries(s, windowYears) {
       if (!s?.dates?.length || !s?.values?.length) return { series: [], mean: null, meanLabel: '' };
-      const cutoff  = windowYears ? Date.now() - windowYears * 365.25 * 24 * 3600 * 1000 : 0;
-      const allYlds = [], series = [];
+      const cutoff = windowYears ? Date.now() - windowYears * 365.25 * 24 * 3600 * 1000 : 0;
+      const series = [];
       for (let i = 0; i < s.dates.length; i++) {
         const v = s.values[i];
         if (v == null || v <= 0) continue;
-        const y = 100 / v;
-        allYlds.push(y);
         if (new Date(s.dates[i]).getTime() >= cutoff)
-          series.push({ x: new Date(s.dates[i]).getTime(), y });
+          series.push({ x: new Date(s.dates[i]).getTime(), y: 100 / v });
       }
-      const mean = allYlds.length ? allYlds.reduce((a, b) => a + b, 0) / allYlds.length : null;
+      const mean = series.length ? series.reduce((a, b) => a + b.y, 0) / series.length : null;
       return { series, mean, meanLabel: mean != null ? `Mean ${mean.toFixed(2)}%` : '' };
     }
     const eyHist = prepYieldSeries(yld?.shiller_pe, 20);
