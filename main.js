@@ -106,69 +106,60 @@ function highlightNav() {
     return `<svg viewBox="0 0 310 160" width="100%">${out}</svg>`;
   }
 
-  // ── Gradient helper: split fill at a threshold value ──
-  function thresholdFill(vals, threshold, aboveColor, belowColor) {
-    const yMin = Math.min(...vals);
-    const yMax = Math.max(...vals);
-    const range = Math.max(yMax - yMin, 0.001);
-    const pct   = Math.max(0, Math.min(100, (yMax - threshold) / range * 100));
-    return {
-      type: 'gradient',
-      gradient: {
-        type: 'vertical',
-        colorStops: [[
-          { offset: 0,         color: aboveColor, opacity: 0.38 },
-          { offset: pct - 0.1, color: aboveColor, opacity: 0.18 },
-          { offset: pct + 0.1, color: belowColor, opacity: 0.18 },
-          { offset: 100,       color: belowColor, opacity: 0.05 },
-        ]],
-      },
-    };
+  // ── rangeArea chart: shades only the band between line and mean ──────────
+  // Green above mean, red below mean — avoids the full-area false-color problem.
+  function buildRangeChart(elId, lineData, mean, lineColor, opts) {
+    const el2 = document.getElementById(elId);
+    if (!el2 || !lineData?.length || mean == null) return;
+    new ApexCharts(el2, {
+      series: [
+        { name: opts.lineName || '', type: 'line',      data: lineData },
+        { name: '',                  type: 'rangeArea', data: lineData.map(p => ({ x: p.x, y: [mean, Math.max(p.y, mean)] })) },
+        { name: '',                  type: 'rangeArea', data: lineData.map(p => ({ x: p.x, y: [Math.min(p.y, mean), mean] })) },
+      ],
+      chart: { type: 'line', height: opts.height, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      theme: { mode: 'dark' },
+      dataLabels: { enabled: false },
+      colors: [lineColor, '#22c55e', '#ef4444'],
+      stroke: { curve: 'smooth', width: [opts.lineWidth ?? 2, 0, 0] },
+      fill:   { type: ['solid', 'solid', 'solid'], opacity: [0, 0.22, 0.22] },
+      legend: { show: false },
+      xaxis:  opts.xaxis,
+      yaxis:  opts.yaxis,
+      grid:   { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
+      tooltip: { ...(opts.tooltip || {}), enabledOnSeries: [0] },
+      annotations: opts.annotations || {},
+    }).render();
   }
 
   // ── F&G history chart ─────────────────────────
   function buildFGChart(history, hex) {
-    const el2 = document.getElementById('wFgChart');
-    if (!el2 || !history?.length) return;
-    new ApexCharts(el2, {
-      series: [{ name: 'Fear & Greed', data: history.map(pt => ({ x: pt.t, y: pt.v })) }],
-      chart: { type: 'area', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
-      theme: { mode: 'dark' },
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 1.5, colors: [hex] },
-      fill: thresholdFill([0, 100], 50, '#22c55e', '#ef4444'),
+    if (!history?.length) return;
+    buildRangeChart('wFgChart', history.map(pt => ({ x: pt.t, y: pt.v })), 50, hex, {
+      height: 170, lineWidth: 1.5, lineName: 'Fear & Greed',
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
-      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) } },
       annotations: { yaxis: [
-        { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear', style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+        { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
         { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
         { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
       ]},
-    }).render();
+    });
   }
 
-  // ── Yields charts (separate panels) ──────────
-  function buildYieldChart(elId, series, color, name, mean) {
-    const el2 = document.getElementById(elId);
-    if (!el2 || !series?.length) return;
-    const vals = series.map(p => p.y).filter(v => v != null);
-    const fill = mean != null
-      ? thresholdFill(vals, mean, '#22c55e', '#ef4444')
-      : { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0,100] }, colors: [color] };
-    new ApexCharts(el2, {
-      series: [{ name, data: series }],
-      chart: { type: 'area', height: 150, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
-      theme: { mode: 'dark' },
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2, colors: [color] },
-      fill,
+  // ── Yield charts (Earnings Yield / Book Yield) ────────────────────────────
+  function buildYieldChart(elId, lineData, lineColor, name, mean, meanLabel) {
+    buildRangeChart(elId, lineData, mean, lineColor, {
+      height: 160, lineWidth: 1.5, lineName: name,
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-      yaxis: { labels: { formatter: v => v.toFixed(1) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
-      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
-      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(2) + '%' } },
-    }).render();
+      yaxis: { labels: { formatter: v => v.toFixed(2) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
+      tooltip: { theme: 'dark', x: { format: 'MMM yyyy' }, y: { formatter: v => v.toFixed(3) + '%' } },
+      annotations: { yaxis: [
+        { y: mean, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4,
+          label: { text: meanLabel, style: { color: '#6888b0', background: 'transparent', fontSize: '9px', padding: {left:2,right:2,top:0,bottom:0} } } },
+      ]},
+    });
   }
 
   // ── Buffett indicator ─────────────────────────
@@ -289,9 +280,10 @@ function highlightNav() {
 
   // ── Fetch & render ────────────────────────────
   try {
-    const [data, rankings] = await Promise.all([
-      fetch('https://finance.bariscankose.com/api/snapshot',     { cache: 'no-store' }).then(r => r.json()),
-      fetch('https://finance.bariscankose.com/api/top-rankings', { cache: 'no-store' }).then(r => r.json()),
+    const [data, rankings, valHist] = await Promise.all([
+      fetch('https://finance.bariscankose.com/api/snapshot',          { cache: 'no-store' }).then(r => r.json()),
+      fetch('https://finance.bariscankose.com/api/top-rankings',       { cache: 'no-store' }).then(r => r.json()),
+      fetch('https://finance.bariscankose.com/api/valuation-history',  { cache: 'no-store' }).then(r => r.json()).catch(() => null),
     ]);
 
     const fg  = data.fear_greed;
@@ -312,9 +304,29 @@ function highlightNav() {
       return `<div class="mw-bz-row"><div class="mw-bz-dot" style="background:${z.color}"></div><span class="mw-bz-label">${z.label} ${range}</span></div>`;
     }).join('') : '';
 
-    // Yields (current values only — full chart lives in finance.bariscankose.com/overview)
+    // Yields — current scalars
     const eyCur = yld?.ey_current != null ? yld.ey_current.toFixed(2) + '%' : '—';
     const byCur = yld?.by_current != null ? yld.by_current.toFixed(2) + '%' : '—';
+
+    // Valuation history → yield series (last 20 years displayed, mean from full history)
+    function prepYieldSeries(dates, values) {
+      if (!dates?.length || !values?.length) return { series: [], mean: null, meanLabel: '' };
+      const cutoff = Date.now() - 20 * 365.25 * 24 * 3600 * 1000;
+      const allYields = [], series = [];
+      for (let i = 0; i < dates.length; i++) {
+        const v = values[i];
+        if (v == null || v <= 0) continue;
+        const y = 100 / v;
+        allYields.push(y);
+        if (new Date(dates[i]).getTime() >= cutoff)
+          series.push({ x: new Date(dates[i]).getTime(), y });
+      }
+      const mean = allYields.length ? allYields.reduce((a, b) => a + b, 0) / allYields.length : null;
+      const meanLabel = mean != null ? `Mean ${mean.toFixed(2)}%` : '';
+      return { series, mean, meanLabel };
+    }
+    const eyHist = prepYieldSeries(valHist?.shiller_pe?.dates, valHist?.shiller_pe?.values);
+    const byHist = prepYieldSeries(valHist?.sp500_pb?.dates,   valHist?.sp500_pb?.values);
 
     el.innerHTML = `
       <!-- ── Buffett Indicator ── -->
@@ -336,23 +348,25 @@ function highlightNav() {
       <div class="mw-yields-row">
         <div class="mw-panel">
           <div class="mw-panel-hdr">
-            <span class="mw-panel-title">Earnings Yield · Shiller CAPE</span>
+            <span class="mw-panel-title">Earnings Yield · Shiller CAPE · 20Y</span>
             <a class="mw-panel-link" href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener">multpl.com ↗</a>
           </div>
           <div class="mw-yield-stat">
             <span class="mw-yield-lbl">100 / CAPE</span>
             <span class="mw-yield-val" style="color:#00d4ff">${eyCur}</span>
           </div>
+          <div id="wEYChart"></div>
         </div>
         <div class="mw-panel">
           <div class="mw-panel-hdr">
-            <span class="mw-panel-title">Book Yield · S&amp;P 500 P/B</span>
+            <span class="mw-panel-title">Book Yield · S&amp;P 500 P/B · 25Y</span>
             <a class="mw-panel-link" href="https://www.multpl.com/s-p-500-price-to-book" target="_blank" rel="noopener">multpl.com ↗</a>
           </div>
           <div class="mw-yield-stat">
             <span class="mw-yield-lbl">100 / P·B</span>
             <span class="mw-yield-val" style="color:#7c3aed">${byCur}</span>
           </div>
+          <div id="wBYChart"></div>
         </div>
       </div>
 
@@ -394,6 +408,8 @@ function highlightNav() {
     // Render charts (errors here must not wipe the widget)
     try { buildBuffettChart(bi?.series, bz?.color ?? '#4a5e80', biMean); } catch {}
     try { buildFGChart(fg?.history, col); } catch {}
+    try { buildYieldChart('wEYChart', eyHist.series, '#00d4ff', 'Earnings Yield', eyHist.mean, eyHist.meanLabel); } catch {}
+    try { buildYieldChart('wBYChart', byHist.series, '#7c3aed', 'Book Yield',     byHist.mean, byHist.meanLabel); } catch {}
 
   } catch {
     el.innerHTML = '<div class="snap-loading">Market data temporarily unavailable.</div>';
