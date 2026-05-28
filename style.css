@@ -814,14 +814,14 @@ body.markets-mode {
   color: var(--text-muted);
   font-size: 0.88rem;
   line-height: 1.7;
-  flex: 1;
 }
 
 .project-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: auto;
+  margin-top: auto; /* pushes tags to the bottom; description stays compact */
+  padding-top: 4px;
 }
 
 .project-tags span {
