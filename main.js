@@ -105,10 +105,9 @@ function highlightNav() {
 ═══════════════════════════════════════════════ */
 const roles = [
   'Full-Stack Engineer',
-  'Embedded Systems Dev',
+  'Embedded Systems Developer',
   'Machine Learning Engineer',
   'Data Scientist',
-  'IoT Enthusiast',
 ];
 let roleIdx = 0, charIdx = 0, deleting = false;
 const roleEl = document.getElementById('roleText');
