@@ -127,7 +127,7 @@ function highlightNav() {
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
       colors: [hex, '#22c55e', '#ef4444'],
-      stroke: { curve: 'smooth', width: [1.5, 0, 0] },
+      stroke: { curve: ['smooth', 'straight', 'straight'], width: [1.5, 0, 0] },
       fill: {
         type: ['solid', 'gradient', 'gradient'],
         opacity: [0, 1, 1],
