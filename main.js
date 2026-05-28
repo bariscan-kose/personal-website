@@ -131,27 +131,55 @@ function highlightNav() {
     }).render();
   }
 
-  // ── Yields chart (ApexCharts) ─────────────────
-  function buildYieldsChart(dates, ey, by) {
-    const el2 = document.getElementById('wYieldsChart');
-    if (!el2 || !dates?.length) return;
-    const toTs = d => new Date(d).getTime();
-    const eySeries = dates.map((d, i) => ({ x: toTs(d), y: ey[i] })).filter(p => p.y != null);
-    const bySeries = dates.map((d, i) => ({ x: toTs(d), y: by[i] })).filter(p => p.y != null);
+  // ── Yields charts (separate panels) ──────────
+  function buildYieldChart(elId, series, color, name) {
+    const el2 = document.getElementById(elId);
+    if (!el2 || !series?.length) return;
     new ApexCharts(el2, {
-      series: [
-        { name: 'Earnings Yield', data: eySeries },
-        { name: 'Book Yield',     data: bySeries },
-      ],
-      chart: { type: 'line', height: 200, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      series: [{ name, data: series }],
+      chart: { type: 'area', height: 150, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: [2, 2], colors: ['#00d4ff', '#7c3aed'] },
+      stroke: { curve: 'smooth', width: 2, colors: [color] },
+      fill: { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0, 100] }, colors: [color] },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: v => v.toFixed(1) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
-      legend: { labels: { colors: ['#00d4ff', '#7c3aed'] }, fontSize: '11px' },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(2) + '%' } },
+    }).render();
+  }
+
+  // ── Buffett indicator ─────────────────────────
+  const BUFFETT_ZONES = [
+    { max:  75, label: 'Undervalued',              color: '#22c55e' },
+    { max:  90, label: 'Fair Valued',              color: '#84cc16' },
+    { max: 115, label: 'Modestly Overvalued',      color: '#eab308' },
+    { max: 135, label: 'Overvalued',               color: '#f97316' },
+    { max: Infinity, label: 'Significantly Overvalued', color: '#ef4444' },
+  ];
+  function buffettZone(val) {
+    return BUFFETT_ZONES.find(z => val < z.max) || BUFFETT_ZONES[BUFFETT_ZONES.length - 1];
+  }
+  function buildBuffettChart(series, zoneColor) {
+    const el2 = document.getElementById('wBuffettChart');
+    if (!el2 || !series?.length) return;
+    const data = series.map(p => ({ x: new Date(p.date).getTime(), y: p.value }));
+    new ApexCharts(el2, {
+      series: [{ name: 'Market Cap / GDP', data }],
+      chart: { type: 'area', height: 140, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      theme: { mode: 'dark' },
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth', width: 2, colors: [zoneColor] },
+      fill: { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0, 100] }, colors: [zoneColor] },
+      xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+      yaxis: { labels: { formatter: v => v.toFixed(0) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
+      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
+      tooltip: { theme: 'dark', x: { format: 'MMM yyyy' }, y: { formatter: v => v.toFixed(1) + '%' } },
+      annotations: { yaxis: [
+        { y: 75,  borderColor: '#22c55e', borderWidth: 1, strokeDashArray: 4 },
+        { y: 100, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4 },
+        { y: 135, borderColor: '#ef4444', borderWidth: 1, strokeDashArray: 4 },
+      ]},
     }).render();
   }
 
@@ -191,40 +219,74 @@ function highlightNav() {
 
     const fg  = data.fear_greed;
     const yld = data.yields;
+    const bi  = data.buffett;
 
-    // F&G panel
+    // F&G
     const rm    = ratingMeta(fg?.rating || '');
     const score = fg?.score ?? 50;
     const col   = rm.hex;
 
-    const PREVS = [
-      { lbl: 'Prev Close', val: fg?.previous_close },
-      { lbl: '1 Week',     val: fg?.previous_week  },
-      { lbl: '1 Month',    val: fg?.previous_month },
-      { lbl: '1 Year',     val: fg?.previous_year  },
-    ];
-    const prevHtml = PREVS.map(p => {
-      const diff = p.val != null ? score - p.val : null;
-      const cls  = diff == null ? '' : diff > 0 ? 'pos' : diff < 0 ? 'neg' : '';
-      const arrow = diff == null ? '' : diff > 0 ? ' ↑' : ' ↓';
-      return `
-        <div class="mw-prev-item">
-          <span class="mw-prev-lbl">${p.lbl}</span>
-          <span class="mw-prev-val">${p.val != null ? p.val.toFixed(0) : '—'}</span>
-          <span class="mw-prev-diff ${cls}">${diff != null ? (diff > 0 ? '+' : '') + diff.toFixed(0) + arrow : ''}</span>
-        </div>`;
-    }).join('');
+    // Buffett
+    const bz     = bi?.current != null ? buffettZone(bi.current) : null;
+    const biCur  = bi?.current != null ? bi.current.toFixed(1) + '%' : '—';
+    const bzHtml = bz ? BUFFETT_ZONES.map(z => {
+      const i = BUFFETT_ZONES.indexOf(z);
+      const range = z.max === Infinity ? '> 135%' : i === 0 ? '< 75%' : `${BUFFETT_ZONES[i-1].max}–${z.max}%`;
+      return `<div class="mw-bz-row"><div class="mw-bz-dot" style="background:${z.color}"></div><span class="mw-bz-label">${z.label} ${range}</span></div>`;
+    }).join('') : '';
 
-    // Yields panel
+    // Yields
     const eyCur = yld?.ey_current != null ? yld.ey_current.toFixed(2) + '%' : '—';
     const byCur = yld?.by_current != null ? yld.by_current.toFixed(2) + '%' : '—';
+    const toTs  = d => new Date(d).getTime();
+    const eySeries = yld?.dates?.map((d, i) => ({ x: toTs(d), y: yld.earnings_yield[i] })).filter(p => p.y != null) ?? [];
+    const bySeries = yld?.dates?.map((d, i) => ({ x: toTs(d), y: yld.book_yield[i] })).filter(p => p.y != null) ?? [];
 
     el.innerHTML = `
-      <!-- ── Fear & Greed panel ── -->
+      <!-- ── Buffett Indicator ── -->
       <div class="mw-panel">
         <div class="mw-panel-hdr">
-          <span class="mw-panel-title">😨 Fear &amp; Greed Index</span>
-          <a class="mw-panel-link" href="https://alternative.me/crypto/fear-and-greed-index/" target="_blank" rel="noopener">alternative.me ↗</a>
+          <span class="mw-panel-title">Buffett Indicator · Market Cap / GDP</span>
+          <a class="mw-panel-link" href="https://fred.stlouisfed.org/series/NCBEILQ027S" target="_blank" rel="noopener">FRED ↗</a>
+        </div>
+        <div class="mw-buffett-stat">
+          <span class="mw-yield-lbl">Market Cap / GDP</span>
+          <span class="mw-yield-val" style="color:${bz?.color ?? '#4a5e80'}">${biCur}</span>
+          ${bz ? `<span class="mw-pill" style="background:${bz.color}22;color:${bz.color}">${bz.label}</span>` : ''}
+        </div>
+        <div id="wBuffettChart"></div>
+        <div class="mw-bz-legend">${bzHtml}</div>
+      </div>
+
+      <!-- ── S&P 500 Yields (2 columns) ── -->
+      <div class="mw-yields-row">
+        <div class="mw-panel">
+          <div class="mw-panel-hdr">
+            <span class="mw-panel-title">Earnings Yield · S&amp;P 500 · 3Y</span>
+          </div>
+          <div class="mw-yield-stat">
+            <span class="mw-yield-lbl">Current</span>
+            <span class="mw-yield-val" style="color:#00d4ff">${eyCur}</span>
+          </div>
+          <div id="wEYChart"></div>
+        </div>
+        <div class="mw-panel">
+          <div class="mw-panel-hdr">
+            <span class="mw-panel-title">Book Yield · S&amp;P 500 · 3Y</span>
+          </div>
+          <div class="mw-yield-stat">
+            <span class="mw-yield-lbl">Current</span>
+            <span class="mw-yield-val" style="color:#7c3aed">${byCur}</span>
+          </div>
+          <div id="wBYChart"></div>
+        </div>
+      </div>
+
+      <!-- ── Fear & Greed ── -->
+      <div class="mw-panel">
+        <div class="mw-panel-hdr">
+          <span class="mw-panel-title">Fear &amp; Greed Index</span>
+          <a class="mw-panel-link" href="https://www.cnn.com/markets/fear-and-greed" target="_blank" rel="noopener">CNN Markets ↗</a>
         </div>
         <div class="mw-fg-main">
           <div class="mw-gauge-wrap">
@@ -233,38 +295,20 @@ function highlightNav() {
               <span class="mw-fg-score-num" style="color:${col}">${score.toFixed(1)}</span>
               <span class="mw-pill ${rm.pillCls}">${rm.label}</span>
             </div>
-            <div class="mw-fg-prevs">${prevHtml}</div>
           </div>
           <div class="mw-fg-chart-side">
-            <div class="mw-chart-label">📅 Last 12 months</div>
+            <div class="mw-chart-label">Last 12 months</div>
             <div id="wFgChart"></div>
           </div>
         </div>
         <div class="mw-comps-row">${buildCompRow(fg?.components)}</div>
-      </div>
-
-      <!-- ── Yields panel ── -->
-      <div class="mw-panel">
-        <div class="mw-panel-hdr">
-          <span class="mw-panel-title">📊 S&amp;P 500 Median Yields · 3 Years</span>
-          <a class="mw-panel-link" href="https://finance.bariscankose.com" target="_blank" rel="noopener">Full analysis ↗</a>
-        </div>
-        <div class="mw-yields-stats">
-          <div class="mw-yield-stat">
-            <span class="mw-yield-lbl">Earnings Yield</span>
-            <span class="mw-yield-val" style="color:#00d4ff">${eyCur}</span>
-          </div>
-          <div class="mw-yield-stat">
-            <span class="mw-yield-lbl">Book Yield</span>
-            <span class="mw-yield-val" style="color:#7c3aed">${byCur}</span>
-          </div>
-        </div>
-        <div id="wYieldsChart"></div>
       </div>`;
 
-    // Render charts after DOM is updated (errors here must not wipe the widget)
+    // Render charts (errors here must not wipe the widget)
+    try { buildBuffettChart(bi?.series, bz?.color ?? '#4a5e80'); } catch {}
+    try { buildYieldChart('wEYChart', eySeries, '#00d4ff', 'Earnings Yield'); } catch {}
+    try { buildYieldChart('wBYChart', bySeries, '#7c3aed', 'Book Yield'); } catch {}
     try { buildFGChart(fg?.history, col); } catch {}
-    try { buildYieldsChart(yld?.dates, yld?.earnings_yield, yld?.book_yield); } catch {}
 
   } catch {
     el.innerHTML = '<div class="snap-loading">Market data temporarily unavailable.</div>';
