@@ -174,26 +174,23 @@ function highlightNav() {
   function buildBuffettChart(series, zoneColor, mean) {
     const el2 = document.getElementById('wBuffettChart');
     if (!el2 || !series?.length) return;
-    const data = series.map(p => ({ x: new Date(p.date).getTime(), y: p.value }));
-    const vals = data.map(p => p.y);
-    const fill = mean != null
-      ? thresholdFill(vals, mean, '#22c55e', '#ef4444')
-      : { type: 'gradient', gradient: { opacityFrom: .18, opacityTo: 0, stops: [0,100] }, colors: [zoneColor] };
+    const data = series.map(p => [new Date(p.date).getTime(), p.value]);
     new ApexCharts(el2, {
       series: [{ name: 'Market Cap / GDP', data }],
       chart: { type: 'area', height: 140, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2, colors: [zoneColor] },
-      fill,
+      colors: [zoneColor],
+      stroke: { curve: 'smooth', width: 2 },
+      fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.25, opacityTo: 0.02 } },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: v => v.toFixed(0) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'MMM yyyy' }, y: { formatter: v => v.toFixed(1) + '%' } },
       annotations: { yaxis: [
-        { y: 75,  borderColor: '#22c55e', borderWidth: 1, strokeDashArray: 4 },
-        { y: 100, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4 },
-        { y: 135, borderColor: '#ef4444', borderWidth: 1, strokeDashArray: 4 },
+        { y: 75,  borderColor: '#22c55e', borderWidth: 1, strokeDashArray: 4, label: { text: 'Undervalued',  style: { color: '#22c55e', background: 'transparent', fontSize: '9px' } } },
+        { y: 100, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Fair value',   style: { color: '#7080a0', background: 'transparent', fontSize: '9px' } } },
+        { y: 135, borderColor: '#ef4444', borderWidth: 1, strokeDashArray: 4, label: { text: 'Overvalued',   style: { color: '#ef4444', background: 'transparent', fontSize: '9px' } } },
       ]},
     }).render();
   }
