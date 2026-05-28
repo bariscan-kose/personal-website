@@ -224,7 +224,7 @@ function highlightNav() {
     { key: 'op_margin_pct',       label: 'Op Mg',     fmt: v => v != null ? v.toFixed(1) + '%' : '—' },
     { key: 'revenue_growth_pct',  label: 'Rev Gr',    fmt: v => v != null ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—' },
     { key: 'earnings_growth_pct', label: 'EPS Gr',    fmt: v => v != null ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—' },
-    { key: 'debt_to_equity',      label: 'D/E',       fmt: v => v != null ? v.toFixed(2) : '—' },
+    { key: 'debt_to_equity',      label: 'D/E %',     fmt: v => v != null ? (v * 100).toFixed(0) + '%' : '—' },
     { key: 'peg_ratio',           label: 'PEG',       fmt: v => v != null ? v.toFixed(2) : '—' },
     { key: 'fcf_ev_yield',        label: 'FCF/EV',    fmt: v => v != null ? v.toFixed(2) + '%' : '—' },
   ];
