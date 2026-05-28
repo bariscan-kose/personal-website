@@ -144,7 +144,7 @@ function highlightNav() {
   }
 
   // ── Yield charts (Earnings Yield / Book Yield) ────────────────────────────
-  function buildYieldChart(elId, lineData, lineColor, name, mean, meanLabel) {
+  function buildYieldChart(elId, lineData, lineColor, name, mean, meanLabel, maxY) {
     const el2 = document.getElementById(elId);
     if (!el2 || !lineData?.length) return;
     new ApexCharts(el2, {
@@ -156,7 +156,7 @@ function highlightNav() {
       stroke: { curve: 'smooth', width: 1.5 },
       fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.75, opacityTo: 0.15 } },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
-      yaxis: { labels: { formatter: v => v.toFixed(2) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
+      yaxis: { max: maxY, labels: { formatter: v => v.toFixed(2) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'MMM yyyy' }, y: { formatter: v => v.toFixed(3) + '%' } },
       annotations: mean != null ? { yaxis: [{
@@ -406,7 +406,7 @@ function highlightNav() {
     // Render charts (errors here must not wipe the widget)
     try { buildBuffettChart(bi?.series, bz?.color ?? '#4a5e80', biMean); } catch {}
     try { buildFGChart(fg?.history, col); } catch {}
-    try { buildYieldChart('wEYChart', eyHist.series, '#00d4ff', 'Earnings Yield', eyHist.mean, eyHist.meanLabel); } catch {}
+    try { buildYieldChart('wEYChart', eyHist.series, '#00d4ff', 'Earnings Yield', eyHist.mean, eyHist.meanLabel, 8); } catch {}
     try { buildYieldChart('wBYChart', byHist.series, '#7c3aed', 'Book Yield',     byHist.mean, byHist.meanLabel); } catch {}
 
   } catch {
