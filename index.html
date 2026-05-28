@@ -17,21 +17,17 @@
 
   <!-- ───────────────────────── NAV ───────────────────────── -->
   <nav id="navbar">
-    <!-- Top row: logo + top-level tabs + hamburger -->
+    <!-- Top row: logo + hamburger -->
     <div class="nav-container">
       <a href="#hero" class="nav-logo">BK</a>
-      <div class="nav-tabs" id="navTabs">
-        <button class="nav-tab active" data-tab="personal">Personal Website</button>
-        <button class="nav-tab" data-tab="markets">Markets Analysis</button>
-      </div>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
         <span></span><span></span><span></span>
       </button>
     </div>
-    <!-- Sub-row: contextual links for the active tab -->
+    <!-- Sub-row: page navigation links -->
     <div class="nav-sub-bar" id="navSubBar">
       <div class="nav-sub-inner">
-        <ul class="nav-links nav-links--personal active" id="navLinksPersonal">
+        <ul class="nav-links active" id="navLinksPersonal">
           <li><a href="#about">About</a></li>
           <li><a href="#experience">Experience</a></li>
           <li><a href="#projects">Projects</a></li>
@@ -42,12 +38,6 @@
           <li><a href="#signoffs">Sign-Offs</a></li>
           <li><a href="#quotes">Wisdom</a></li>
           <li><a href="#contact">Contact</a></li>
-        </ul>
-        <ul class="nav-links nav-links--markets" id="navLinksMarkets">
-          <li><a href="#" data-frame-src="https://finance.bariscankose.com/">S&amp;P 500 Overview</a></li>
-          <li><a href="#" data-frame-src="https://finance.bariscankose.com/macro">Macro</a></li>
-          <li><a href="#" data-frame-src="https://finance.bariscankose.com/screener">Screener</a></li>
-          <li><a href="#" data-frame-src="https://finance.bariscankose.com/ranking">Rankings</a></li>
         </ul>
       </div>
     </div>
@@ -331,6 +321,11 @@
       <h2 class="section-title reveal">Understanding Markets</h2>
       <p class="section-subtitle reveal">Financial markets are one of humanity's most complex information systems. Here's what every informed participant should know.</p>
 
+      <!-- Live Market Pulse (data from finance.bariscankose.com/api/snapshot) -->
+      <div class="market-snapshot reveal" id="marketSnapshot">
+        <div class="snap-loading">Loading market pulse…</div>
+      </div>
+
       <!-- TradingView Widget -->
       <div class="tradingview-wrapper reveal">
         <div class="tradingview-widget-container">
@@ -601,9 +596,6 @@
       <p class="footer-sub">Electronics Engineer · Software Developer · Lifelong Learner</p>
     </div>
   </footer>
-
-  <!-- Finance markets iframe (shown when Markets Analysis tab is active) -->
-  <iframe id="financeFrame" title="Markets Analysis" allowfullscreen></iframe>
 
   <!-- GSAP + ScrollTrigger (UMD builds from cdnjs — loaded before main.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>

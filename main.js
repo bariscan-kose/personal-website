@@ -1,26 +1,12 @@
 'use strict';
 
 /* ═══════════════════════════════════════════════
-   NAV — TWO-TIER
+   NAV
 ═══════════════════════════════════════════════ */
 const navbar           = document.getElementById('navbar');
 const navToggle        = document.getElementById('navToggle');
 const navSubBar        = document.getElementById('navSubBar');
 const navLinksPersonal = document.getElementById('navLinksPersonal');
-const navLinksMarkets  = document.getElementById('navLinksMarkets');
-
-// Check if Markets Analysis tab should be shown
-(async () => {
-  const tabMarkets = document.querySelector('.nav-tab[data-tab="markets"]');
-  try {
-    const res  = await fetch('https://finance.bariscankose.com/api/markets-status', { cache: 'no-store' });
-    const data = await res.json();
-    if (!data.enabled) tabMarkets?.remove();
-  } catch {
-    // VPS unreachable — hide the tab gracefully
-    tabMarkets?.remove();
-  }
-})();
 
 // ── Scroll: backdrop + section highlight ──────
 window.addEventListener('scroll', () => {
@@ -44,51 +30,7 @@ navSubBar.addEventListener('click', e => {
   }
 });
 
-// ── Finance iframe ────────────────────────────
-const financeFrame = document.getElementById('financeFrame');
-let frameLoaded = false;
-
-function loadFinanceFrame(src) {
-  financeFrame.src = src;
-  frameLoaded = true;
-  // Update active state in markets sub-nav
-  navLinksMarkets.querySelectorAll('a[data-frame-src]').forEach(a => {
-    a.classList.toggle('active', a.dataset.frameSrc === src);
-  });
-}
-
-// Markets sub-nav clicks → swap iframe src
-navLinksMarkets.addEventListener('click', e => {
-  const link = e.target.closest('a[data-frame-src]');
-  if (!link) return;
-  e.preventDefault();
-  loadFinanceFrame(link.dataset.frameSrc);
-  // Close mobile overlay (keep body overflow:hidden for markets mode)
-  navToggle.classList.remove('open');
-  navSubBar.classList.remove('open');
-});
-
-// ── Top-level tab switching ───────────────────
-document.querySelectorAll('.nav-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const isMarkets = tab.dataset.tab === 'markets';
-    navLinksPersonal.classList.toggle('active', !isMarkets);
-    navLinksMarkets.classList.toggle('active',  isMarkets);
-
-    if (isMarkets) {
-      document.body.classList.add('markets-mode');
-      // Load overview on first open
-      if (!frameLoaded) loadFinanceFrame('https://finance.bariscankose.com/');
-    } else {
-      document.body.classList.remove('markets-mode');
-      document.body.style.overflow = '';
-    }
-  });
-});
-
-// ── Section highlight (personal nav only) ────
+// ── Section highlight ─────────────────────────
 function highlightNav() {
   const sections = document.querySelectorAll('section[id]');
   const scrollY  = window.scrollY + 100;
@@ -99,6 +41,74 @@ function highlightNav() {
     link.classList.toggle('active', scrollY >= top && scrollY < top + h);
   });
 }
+
+/* ═══════════════════════════════════════════════
+   MARKET PULSE SNAPSHOT
+   Fetches from finance.bariscankose.com/api/snapshot
+   and renders an inline widget in #marketSnapshot.
+═══════════════════════════════════════════════ */
+(async () => {
+  const el = document.getElementById('marketSnapshot');
+  if (!el) return;
+
+  const SNAPSHOT_URL = 'https://finance.bariscankose.com/api/snapshot';
+
+  // Rating → CSS class slug + display label
+  function ratingMeta(rating) {
+    const r = (rating || '').toLowerCase();
+    if (r.includes('extreme') && r.includes('fear'))  return { cls: 'extreme-fear',  label: 'Extreme Fear'  };
+    if (r.includes('fear'))                            return { cls: 'fear',           label: 'Fear'          };
+    if (r.includes('extreme') && r.includes('greed')) return { cls: 'extreme-greed', label: 'Extreme Greed' };
+    if (r.includes('greed'))                           return { cls: 'greed',          label: 'Greed'         };
+    return { cls: 'neutral', label: 'Neutral' };
+  }
+
+  try {
+    const data = await fetch(SNAPSHOT_URL, { cache: 'no-store' }).then(r => r.json());
+
+    const fg    = data.fear_greed;   // {score, rating} or null
+    const sp    = data.sp500;        // {advancing_pct, median_pe, num_companies, as_of}
+
+    const rm    = fg ? ratingMeta(fg.rating) : { cls: 'neutral', label: '—' };
+    const score = fg?.score != null ? fg.score.toFixed(0) : '—';
+
+    const advPct = sp?.advancing_pct != null ? sp.advancing_pct.toFixed(1) + '%' : '—';
+    const pe     = sp?.median_pe     != null ? sp.median_pe.toFixed(1)           : '—';
+    const n      = sp?.num_companies != null ? sp.num_companies                  : '—';
+    const asOf   = sp?.as_of ? sp.as_of.slice(0, 10) : '';
+
+    el.innerHTML = `
+      <div class="snap-card">
+        <span class="snap-label">Fear &amp; Greed Index</span>
+        <span class="snap-value">${score}</span>
+        <span class="snap-badge ${rm.cls}">${rm.label}</span>
+      </div>
+      <div class="snap-card">
+        <span class="snap-label">S&amp;P 500 Pulse${asOf ? ' · ' + asOf : ''}</span>
+        <div class="snap-stats">
+          <div class="snap-stat-row">
+            <span class="snap-stat-key">Stocks above 30d ago</span>
+            <span class="snap-stat-val">${advPct}</span>
+          </div>
+          <div class="snap-stat-row">
+            <span class="snap-stat-key">Median trailing P/E</span>
+            <span class="snap-stat-val">${pe}×</span>
+          </div>
+          <div class="snap-stat-row">
+            <span class="snap-stat-key">Companies tracked</span>
+            <span class="snap-stat-val">${n}</span>
+          </div>
+        </div>
+      </div>
+      <div class="snap-footer">
+        <a href="https://finance.bariscankose.com" target="_blank" rel="noopener">
+          View full analysis → finance.bariscankose.com
+        </a>
+      </div>`;
+  } catch {
+    el.innerHTML = '';   // silently hide widget if VPS is unreachable
+  }
+})();
 
 /* ═══════════════════════════════════════════════
    HERO ROLE TYPER
