@@ -141,6 +141,7 @@ function highlightNav() {
       chart: { type: 'rangeArea', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
+      markers: { size: [3, 0, 0] },
       colors: [hex, '#22c55e', '#ef4444'],
       stroke: { curve: ['smooth', 'straight', 'straight'], width: [1.5, 0, 0] },
       fill: {
