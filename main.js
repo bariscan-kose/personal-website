@@ -262,12 +262,12 @@ function highlightNav() {
         <div id="wYieldsChart"></div>
       </div>`;
 
-    // Render charts after DOM is updated
-    buildFGChart(fg?.history, col);
-    buildYieldsChart(yld?.dates, yld?.earnings_yield, yld?.book_yield);
+    // Render charts after DOM is updated (errors here must not wipe the widget)
+    try { buildFGChart(fg?.history, col); } catch {}
+    try { buildYieldsChart(yld?.dates, yld?.earnings_yield, yld?.book_yield); } catch {}
 
   } catch {
-    el.innerHTML = '';   // silently hide if VPS unreachable
+    el.innerHTML = '<div class="snap-loading">Market data temporarily unavailable.</div>';
   }
 })();
 
