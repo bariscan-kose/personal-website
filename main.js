@@ -110,17 +110,30 @@ function highlightNav() {
   function buildFGChart(history, hex) {
     const el2 = document.getElementById('wFgChart');
     if (!el2 || !history?.length) return;
-    // Filter any bad points so rangeArea never receives NaN
     const pts = history.filter(pt => pt.v != null && isFinite(pt.v));
     if (!pts.length) return;
+
+    // Insert a synthetic point exactly at v=50 wherever the series crosses the
+    // neutral line, so the bezier curves are pinned there and neither the green
+    // nor red band can overshoot into the other's territory.
+    const pinned = [];
+    for (let i = 0; i < pts.length; i++) {
+      if (i > 0) {
+        const v1 = +pts[i - 1].v, v2 = +pts[i].v;
+        if ((v1 - 50) * (v2 - 50) < 0) {
+          const t1 = +pts[i - 1].t, t2 = +pts[i].t;
+          const tc = t1 + (t2 - t1) * (50 - v1) / (v2 - v1);
+          pinned.push({ t: tc, v: 50 });
+        }
+      }
+      pinned.push(pts[i]);
+    }
+
     new ApexCharts(el2, {
       series: [
-        // Line on top — fill opacity 0 so only the stroke shows
-        { name: 'Fear & Greed', type: 'line',      data: pts.map(pt => ({ x: +pt.t, y: +pt.v })) },
-        // Green band: fills between 50 and score when score > 50
-        { name: '',             type: 'rangeArea', data: pts.map(pt => ({ x: +pt.t, y: [50, Math.max(+pt.v, 50)] })) },
-        // Red band: fills between score and 50 when score < 50
-        { name: '',             type: 'rangeArea', data: pts.map(pt => ({ x: +pt.t, y: [Math.min(+pt.v, 50), 50] })) },
+        { name: 'Fear & Greed', type: 'line',      data: pinned.map(pt => ({ x: +pt.t, y: +pt.v })) },
+        { name: '',             type: 'rangeArea', data: pinned.map(pt => ({ x: +pt.t, y: [50, Math.max(+pt.v, 50)] })) },
+        { name: '',             type: 'rangeArea', data: pinned.map(pt => ({ x: +pt.t, y: [Math.min(+pt.v, 50), 50] })) },
       ],
       // 'rangeArea' as the base type is required for mixed line+rangeArea charts
       chart: { type: 'rangeArea', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
