@@ -131,7 +131,9 @@ function highlightNav() {
 
     new ApexCharts(el2, {
       series: [
-        { name: 'Fear & Greed', type: 'line',      data: pinned.map(pt => ({ x: +pt.t, y: +pt.v })) },
+        // Line uses original pts — no synthetic crossing points so no extra hover dot
+        { name: 'Fear & Greed', type: 'line',      data: pts.map(pt => ({ x: +pt.t, y: +pt.v })) },
+        // Bands use pinned pts so bezier is anchored exactly at 50 at each crossing
         { name: '',             type: 'rangeArea', data: pinned.map(pt => ({ x: +pt.t, y: [50, Math.max(+pt.v, 50)] })) },
         { name: '',             type: 'rangeArea', data: pinned.map(pt => ({ x: +pt.t, y: [Math.min(+pt.v, 50), 50] })) },
       ],
