@@ -110,25 +110,40 @@ function highlightNav() {
   function buildFGChart(history, hex) {
     const el2 = document.getElementById('wFgChart');
     if (!el2 || !history?.length) return;
+    // Filter any bad points so rangeArea never receives NaN
+    const pts = history.filter(pt => pt.v != null && isFinite(pt.v));
+    if (!pts.length) return;
     new ApexCharts(el2, {
-      series: [{ name: 'Fear & Greed', data: history.map(pt => [pt.t, pt.v]) }],
-      chart: { type: 'area', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      series: [
+        // Line on top — fill opacity 0 so only the stroke shows
+        { name: 'Fear & Greed', type: 'line',      data: pts.map(pt => ({ x: +pt.t, y: +pt.v })) },
+        // Green band: fills between 50 and score when score > 50
+        { name: '',             type: 'rangeArea', data: pts.map(pt => ({ x: +pt.t, y: [50, Math.max(+pt.v, 50)] })) },
+        // Red band: fills between score and 50 when score < 50
+        { name: '',             type: 'rangeArea', data: pts.map(pt => ({ x: +pt.t, y: [Math.min(+pt.v, 50), 50] })) },
+      ],
+      // 'rangeArea' as the base type is required for mixed line+rangeArea charts
+      chart: { type: 'rangeArea', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
-      colors: [hex],
-      stroke: { curve: 'smooth', width: 1.5 },
+      colors: [hex, '#22c55e', '#ef4444'],
+      stroke: { curve: 'smooth', width: [1.5, 0, 0] },
       fill: {
-        type: 'gradient',
-        gradient: { type: 'vertical', colorStops: [[
-          { offset: 0,  color: '#22c55e', opacity: 0.35 },
-          { offset: 50, color: '#eab308', opacity: 0.15 },
-          { offset: 100, color: '#ef4444', opacity: 0.30 },
-        ]] },
+        type: ['solid', 'gradient', 'gradient'],
+        opacity: [0, 1, 1],
+        gradient: {
+          shade: 'dark',
+          type: 'vertical',
+          opacityFrom: 0.35,
+          opacityTo: 0.04,
+          stops: [0, 100],
+        },
       },
+      legend: { show: false },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
-      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) } },
+      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) }, enabledOnSeries: [0] },
       annotations: { yaxis: [
         { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
         { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
