@@ -112,66 +112,22 @@ function highlightNav() {
     if (!el2 || !history?.length) return;
     const pts = history.filter(pt => pt.v != null && isFinite(pt.v));
     if (!pts.length) return;
-
-    // Insert a synthetic point exactly at v=50 wherever the series crosses the
-    // neutral line, so the bezier curves are pinned there and neither the green
-    // nor red band can overshoot into the other's territory.
-    const pinned = [];
-    for (let i = 0; i < pts.length; i++) {
-      if (i > 0) {
-        const v1 = +pts[i - 1].v, v2 = +pts[i].v;
-        if ((v1 - 50) * (v2 - 50) < 0) {
-          const t1 = +pts[i - 1].t, t2 = +pts[i].t;
-          const tc = t1 + (t2 - t1) * (50 - v1) / (v2 - v1);
-          pinned.push({ t: tc, v: 50 });
-        }
-      }
-      pinned.push(pts[i]);
-    }
-
     new ApexCharts(el2, {
       series: [
-        // Line uses original pts — no synthetic crossing points so no extra hover dot
-        { name: 'Fear & Greed', type: 'line',      data: pts.map(pt => ({ x: +pt.t, y: +pt.v })) },
-        // Bands use pinned pts so bezier is anchored exactly at 50 at each crossing
-        { name: '',             type: 'rangeArea', data: pinned.map(pt => ({ x: +pt.t, y: [50, Math.max(+pt.v, 50)] })) },
-        { name: '',             type: 'rangeArea', data: pinned.map(pt => ({ x: +pt.t, y: [Math.min(+pt.v, 50), 50] })) },
+        { name: 'Greed', data: pts.map(pt => [+pt.t, +pt.v >= 50 ? +pt.v : null]) },
+        { name: 'Fear',  data: pts.map(pt => [+pt.t, +pt.v <  50 ? +pt.v : null]) },
       ],
-      // 'rangeArea' as the base type is required for mixed line+rangeArea charts
-      chart: { type: 'rangeArea', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      chart: { type: 'area', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
-      markers: { size: 0, hover: { size: 0 } },
-      colors: [hex, '#22c55e', '#ef4444'],
-      stroke: { curve: ['smooth', 'straight', 'straight'], width: [1.5, 0, 0] },
-      fill: {
-        type: ['solid', 'gradient', 'gradient'],
-        opacity: [0, 1, 1],
-        gradient: {
-          shade: 'dark',
-          type: 'vertical',
-          opacityFrom: 0.95,
-          opacityTo: 0.65,
-          stops: [0, 100],
-        },
-      },
+      colors: ['#22c55e', '#ef4444'],
+      stroke: { curve: 'smooth', width: 1.5 },
+      fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.75, opacityTo: 0.15 } },
       legend: { show: false },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
       grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
-      tooltip: {
-        theme: 'dark',
-        custom: ({ series, seriesIndex, dataPointIndex, w }) => {
-          const val  = series[0][dataPointIndex];
-          const ts   = w.globals.seriesX[0][dataPointIndex];
-          const date = new Date(ts).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: '2-digit' });
-          const col  = w.globals.colors[0];
-          return `<div style="padding:6px 10px;font-size:12px">` +
-            `<span style="color:${col}">&#9679;</span> ` +
-            `<b>Fear and Greed</b>: ${(+val).toFixed(1)}` +
-            `</div>`;
-        },
-      },
+      tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v != null ? v.toFixed(1) : '' }, shared: false },
       annotations: { yaxis: [
         { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
         { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
