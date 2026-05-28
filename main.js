@@ -213,9 +213,59 @@ function highlightNav() {
     }).join('');
   }
 
+  // ── Stock rankings table ─────────────────────
+  const STOCK_COLS = [
+    { key: 'earnings_yield',      label: 'EY %',      fmt: v => v != null ? v.toFixed(2) + '%' : '—' },
+    { key: 'book_yield',          label: 'BY %',      fmt: v => v != null ? v.toFixed(2) + '%' : '—' },
+    { key: 'dividend_yield',      label: 'Div %',     fmt: v => v != null ? v.toFixed(2) + '%' : '—' },
+    { key: 'roe_pct',             label: 'ROE %',     fmt: v => v != null ? v.toFixed(1) + '%' : '—' },
+    { key: 'roa_pct',             label: 'ROA %',     fmt: v => v != null ? v.toFixed(1) + '%' : '—' },
+    { key: 'net_margin_pct',      label: 'Net Mg',    fmt: v => v != null ? v.toFixed(1) + '%' : '—' },
+    { key: 'op_margin_pct',       label: 'Op Mg',     fmt: v => v != null ? v.toFixed(1) + '%' : '—' },
+    { key: 'revenue_growth_pct',  label: 'Rev Gr',    fmt: v => v != null ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—' },
+    { key: 'earnings_growth_pct', label: 'EPS Gr',    fmt: v => v != null ? (v > 0 ? '+' : '') + v.toFixed(1) + '%' : '—' },
+    { key: 'debt_to_equity',      label: 'D/E',       fmt: v => v != null ? v.toFixed(2) : '—' },
+    { key: 'peg_ratio',           label: 'PEG',       fmt: v => v != null ? v.toFixed(2) : '—' },
+    { key: 'fcf_ev_yield',        label: 'FCF/EV',    fmt: v => v != null ? v.toFixed(2) + '%' : '—' },
+  ];
+
+  function buildStocksTable(stocks) {
+    if (!stocks?.length) return '';
+    const rows = stocks.map((s, i) => {
+      const cells = STOCK_COLS.map(c => {
+        const v = s[c.key];
+        const text = c.fmt(v != null ? parseFloat(v) : null);
+        return `<td class="mw-td-num">${text}</td>`;
+      }).join('');
+      return `<tr>
+        <td class="mw-td-rank">${i + 1}</td>
+        <td class="mw-td-ticker"><a href="https://finance.bariscankose.com/stock/${s.ticker}" target="_blank" rel="noopener">${s.ticker}</a></td>
+        <td class="mw-td-name" title="${s.name || ''}">${s.name || '—'}</td>
+        <td class="mw-td-sector">${s.sector || '—'}</td>
+        <td class="mw-td-score">${s.quality_score != null ? parseFloat(s.quality_score).toFixed(1) : '—'}</td>
+        ${cells}
+      </tr>`;
+    }).join('');
+
+    const headers = STOCK_COLS.map(c => `<th>${c.label}</th>`).join('');
+    return `
+      <div class="mw-table-wrap">
+        <table class="mw-stocks-table">
+          <thead><tr>
+            <th>#</th><th>Ticker</th><th>Company</th><th>Sector</th><th>Score</th>
+            ${headers}
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }
+
   // ── Fetch & render ────────────────────────────
   try {
-    const data = await fetch('https://finance.bariscankose.com/api/snapshot', { cache: 'no-store' }).then(r => r.json());
+    const [data, rankings] = await Promise.all([
+      fetch('https://finance.bariscankose.com/api/snapshot',     { cache: 'no-store' }).then(r => r.json()),
+      fetch('https://finance.bariscankose.com/api/top-rankings', { cache: 'no-store' }).then(r => r.json()),
+    ]);
 
     const fg  = data.fear_greed;
     const yld = data.yields;
@@ -302,6 +352,15 @@ function highlightNav() {
           </div>
         </div>
         <div class="mw-comps-row">${buildCompRow(fg?.components)}</div>
+      </div>
+
+      <!-- ── Top 20 Rankings ── -->
+      <div class="mw-panel">
+        <div class="mw-panel-hdr">
+          <span class="mw-panel-title">Top 20 Ranked Stocks · Composite Score</span>
+          <a class="mw-panel-link" href="https://finance.bariscankose.com/ranking" target="_blank" rel="noopener">Full rankings ↗</a>
+        </div>
+        ${buildStocksTable(rankings)}
       </div>`;
 
     // Render charts (errors here must not wipe the widget)

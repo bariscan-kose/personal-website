@@ -1072,6 +1072,104 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   color: var(--text-dim);
 }
 
+/* ── Stock rankings table ── */
+.mw-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  margin-top: 4px;
+}
+
+.mw-stocks-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.mw-stocks-table thead th {
+  padding: 6px 10px;
+  text-align: right;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  position: sticky;
+  top: 0;
+}
+
+.mw-stocks-table thead th:nth-child(1),
+.mw-stocks-table thead th:nth-child(2),
+.mw-stocks-table thead th:nth-child(3),
+.mw-stocks-table thead th:nth-child(4),
+.mw-stocks-table thead th:nth-child(5) {
+  text-align: left;
+}
+
+.mw-stocks-table tbody tr {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background var(--trans);
+}
+
+.mw-stocks-table tbody tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.mw-stocks-table td {
+  padding: 7px 10px;
+  vertical-align: middle;
+}
+
+.mw-td-rank {
+  color: var(--text-dim);
+  font-size: .65rem;
+  font-family: var(--font-mono);
+  text-align: left;
+  min-width: 24px;
+}
+
+.mw-td-ticker a {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: .78rem;
+  color: var(--cyan);
+  text-decoration: none;
+  transition: opacity var(--trans);
+}
+.mw-td-ticker a:hover { opacity: .75; }
+
+.mw-td-name {
+  color: var(--text-muted);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mw-td-sector {
+  color: var(--text-dim);
+  font-size: .65rem;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mw-td-score {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.mw-td-num {
+  font-family: var(--font-mono);
+  font-size: .72rem;
+  text-align: right;
+  color: var(--text-muted);
+}
+
 /* Responsive */
 @media (max-width: 680px) {
   .mw-fg-main {
