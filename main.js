@@ -280,10 +280,9 @@ function highlightNav() {
 
   // ── Fetch & render ────────────────────────────
   try {
-    const [data, rankings, valHist] = await Promise.all([
-      fetch('https://finance.bariscankose.com/api/snapshot',          { cache: 'no-store' }).then(r => r.json()),
-      fetch('https://finance.bariscankose.com/api/top-rankings',       { cache: 'no-store' }).then(r => r.json()),
-      fetch('https://finance.bariscankose.com/api/valuation-history',  { cache: 'no-store' }).then(r => r.json()).catch(() => null),
+    const [data, rankings] = await Promise.all([
+      fetch('https://finance.bariscankose.com/api/snapshot',     { cache: 'no-store' }).then(r => r.json()),
+      fetch('https://finance.bariscankose.com/api/top-rankings', { cache: 'no-store' }).then(r => r.json()),
     ]);
 
     const fg  = data.fear_greed;
@@ -308,25 +307,25 @@ function highlightNav() {
     const eyCur = yld?.ey_current != null ? yld.ey_current.toFixed(2) + '%' : '—';
     const byCur = yld?.by_current != null ? yld.by_current.toFixed(2) + '%' : '—';
 
-    // Valuation history → yield series (last 20 years displayed, mean from full history)
-    function prepYieldSeries(dates, values) {
-      if (!dates?.length || !values?.length) return { series: [], mean: null, meanLabel: '' };
-      const cutoff = Date.now() - 20 * 365.25 * 24 * 3600 * 1000;
-      const allYields = [], series = [];
-      for (let i = 0; i < dates.length; i++) {
-        const v = values[i];
+    // Invert raw ratio series → yield (100/v), compute mean over full history,
+    // filter display to last 20 years for EY (monthly since 1871) and all for BY (~25yr)
+    function prepYieldSeries(s, windowYears) {
+      if (!s?.dates?.length || !s?.values?.length) return { series: [], mean: null, meanLabel: '' };
+      const cutoff  = windowYears ? Date.now() - windowYears * 365.25 * 24 * 3600 * 1000 : 0;
+      const allYlds = [], series = [];
+      for (let i = 0; i < s.dates.length; i++) {
+        const v = s.values[i];
         if (v == null || v <= 0) continue;
         const y = 100 / v;
-        allYields.push(y);
-        if (new Date(dates[i]).getTime() >= cutoff)
-          series.push({ x: new Date(dates[i]).getTime(), y });
+        allYlds.push(y);
+        if (new Date(s.dates[i]).getTime() >= cutoff)
+          series.push({ x: new Date(s.dates[i]).getTime(), y });
       }
-      const mean = allYields.length ? allYields.reduce((a, b) => a + b, 0) / allYields.length : null;
-      const meanLabel = mean != null ? `Mean ${mean.toFixed(2)}%` : '';
-      return { series, mean, meanLabel };
+      const mean = allYlds.length ? allYlds.reduce((a, b) => a + b, 0) / allYlds.length : null;
+      return { series, mean, meanLabel: mean != null ? `Mean ${mean.toFixed(2)}%` : '' };
     }
-    const eyHist = prepYieldSeries(valHist?.shiller_pe?.dates, valHist?.shiller_pe?.values);
-    const byHist = prepYieldSeries(valHist?.sp500_pb?.dates,   valHist?.sp500_pb?.values);
+    const eyHist = prepYieldSeries(yld?.shiller_pe, 20);
+    const byHist = prepYieldSeries(yld?.sp500_pb,   null);
 
     el.innerHTML = `
       <!-- ── Buffett Indicator ── -->
