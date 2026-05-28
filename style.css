@@ -990,6 +990,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   opacity: .6;
   line-height: 1.2;
   white-space: normal;
+  min-height: 1.4rem;
 }
 
 .mw-comp-score {
