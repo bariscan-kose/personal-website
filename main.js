@@ -312,12 +312,9 @@ function highlightNav() {
       return `<div class="mw-bz-row"><div class="mw-bz-dot" style="background:${z.color}"></div><span class="mw-bz-label">${z.label} ${range}</span></div>`;
     }).join('') : '';
 
-    // Yields
+    // Yields (current values only — full chart lives in finance.bariscankose.com/overview)
     const eyCur = yld?.ey_current != null ? yld.ey_current.toFixed(2) + '%' : '—';
     const byCur = yld?.by_current != null ? yld.by_current.toFixed(2) + '%' : '—';
-    const toTs  = d => new Date(d).getTime();
-    const eySeries = yld?.dates?.map((d, i) => ({ x: toTs(d), y: yld.earnings_yield[i] })).filter(p => p.y != null) ?? [];
-    const bySeries = yld?.dates?.map((d, i) => ({ x: toTs(d), y: yld.book_yield[i] })).filter(p => p.y != null) ?? [];
 
     el.innerHTML = `
       <!-- ── Buffett Indicator ── -->
@@ -339,23 +336,23 @@ function highlightNav() {
       <div class="mw-yields-row">
         <div class="mw-panel">
           <div class="mw-panel-hdr">
-            <span class="mw-panel-title">Earnings Yield · S&amp;P 500 · 3Y</span>
+            <span class="mw-panel-title">Earnings Yield · Shiller CAPE</span>
+            <a class="mw-panel-link" href="https://www.multpl.com/shiller-pe" target="_blank" rel="noopener">multpl.com ↗</a>
           </div>
           <div class="mw-yield-stat">
-            <span class="mw-yield-lbl">Current</span>
+            <span class="mw-yield-lbl">100 / CAPE</span>
             <span class="mw-yield-val" style="color:#00d4ff">${eyCur}</span>
           </div>
-          <div id="wEYChart"></div>
         </div>
         <div class="mw-panel">
           <div class="mw-panel-hdr">
-            <span class="mw-panel-title">Book Yield · S&amp;P 500 · 3Y</span>
+            <span class="mw-panel-title">Book Yield · S&amp;P 500 P/B</span>
+            <a class="mw-panel-link" href="https://www.multpl.com/s-p-500-price-to-book" target="_blank" rel="noopener">multpl.com ↗</a>
           </div>
           <div class="mw-yield-stat">
-            <span class="mw-yield-lbl">Current</span>
+            <span class="mw-yield-lbl">100 / P·B</span>
             <span class="mw-yield-val" style="color:#7c3aed">${byCur}</span>
           </div>
-          <div id="wBYChart"></div>
         </div>
       </div>
 
@@ -390,16 +387,12 @@ function highlightNav() {
         ${buildStocksTable(rankings)}
       </div>`;
 
-    // Compute means for threshold shading
+    // Compute mean for Buffett chart shading
     const mean = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
-    const eyMean = mean(eySeries.map(p => p.y));
-    const byMean = mean(bySeries.map(p => p.y));
     const biMean = bi?.series?.length ? mean(bi.series.map(p => p.value)) : null;
 
     // Render charts (errors here must not wipe the widget)
     try { buildBuffettChart(bi?.series, bz?.color ?? '#4a5e80', biMean); } catch {}
-    try { buildYieldChart('wEYChart', eySeries, '#00d4ff', 'Earnings Yield', eyMean); } catch {}
-    try { buildYieldChart('wBYChart', bySeries, '#7c3aed', 'Book Yield', byMean); } catch {}
     try { buildFGChart(fg?.history, col); } catch {}
 
   } catch {
