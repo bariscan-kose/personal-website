@@ -106,60 +106,58 @@ function highlightNav() {
     return `<svg viewBox="0 0 310 160" width="100%">${out}</svg>`;
   }
 
-  // ── rangeArea chart: shades only the band between line and mean ──────────
-  // Green above mean, red below mean — avoids the full-area false-color problem.
-  function buildRangeChart(elId, lineData, mean, lineColor, opts) {
-    const el2 = document.getElementById(elId);
-    if (!el2 || !lineData?.length || mean == null) return;
-    new ApexCharts(el2, {
-      series: [
-        { name: opts.lineName || '', type: 'line',      data: lineData },
-        { name: '',                  type: 'rangeArea', data: lineData.map(p => ({ x: p.x, y: [mean, Math.max(p.y, mean)] })) },
-        { name: '',                  type: 'rangeArea', data: lineData.map(p => ({ x: p.x, y: [Math.min(p.y, mean), mean] })) },
-      ],
-      chart: { type: 'line', height: opts.height, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
-      theme: { mode: 'dark' },
-      dataLabels: { enabled: false },
-      colors: [lineColor, '#22c55e', '#ef4444'],
-      stroke: { curve: 'smooth', width: [opts.lineWidth ?? 2, 0, 0] },
-      fill:   { type: ['solid', 'solid', 'solid'], opacity: [0, 0.22, 0.22] },
-      legend: { show: false },
-      xaxis:  opts.xaxis,
-      yaxis:  opts.yaxis,
-      grid:   { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
-      tooltip: { ...(opts.tooltip || {}), enabledOnSeries: [0] },
-      annotations: opts.annotations || {},
-    }).render();
-  }
-
   // ── F&G history chart ─────────────────────────
   function buildFGChart(history, hex) {
-    if (!history?.length) return;
-    buildRangeChart('wFgChart', history.map(pt => ({ x: pt.t, y: pt.v })), 50, hex, {
-      height: 170, lineWidth: 1.5, lineName: 'Fear & Greed',
+    const el2 = document.getElementById('wFgChart');
+    if (!el2 || !history?.length) return;
+    new ApexCharts(el2, {
+      series: [{ name: 'Fear & Greed', data: history.map(pt => [pt.t, pt.v]) }],
+      chart: { type: 'area', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      theme: { mode: 'dark' },
+      dataLabels: { enabled: false },
+      colors: [hex],
+      stroke: { curve: 'smooth', width: 1.5 },
+      fill: {
+        type: 'gradient',
+        gradient: { type: 'vertical', colorStops: [[
+          { offset: 0,  color: '#22c55e', opacity: 0.35 },
+          { offset: 50, color: '#eab308', opacity: 0.15 },
+          { offset: 100, color: '#ef4444', opacity: 0.30 },
+        ]] },
+      },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
+      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'dd MMM yy' }, y: { formatter: v => v.toFixed(1) } },
       annotations: { yaxis: [
-        { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
-        { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
-        { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: {left:0,right:0,top:0,bottom:0} } } },
+        { y: 25, borderColor: '#7f1d1d', borderWidth: 1, label: { text: 'Extreme Fear',  style: { color: '#ef4444', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
+        { y: 50, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4, label: { text: 'Neutral', style: { color: '#7080a0', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
+        { y: 75, borderColor: '#14532d', borderWidth: 1, label: { text: 'Extreme Greed', style: { color: '#22c55e', background: 'transparent', fontSize: '9px', padding: { left:0, right:0, top:0, bottom:0 } } } },
       ]},
-    });
+    }).render();
   }
 
   // ── Yield charts (Earnings Yield / Book Yield) ────────────────────────────
   function buildYieldChart(elId, lineData, lineColor, name, mean, meanLabel) {
-    buildRangeChart(elId, lineData, mean, lineColor, {
-      height: 160, lineWidth: 1.5, lineName: name,
+    const el2 = document.getElementById(elId);
+    if (!el2 || !lineData?.length) return;
+    new ApexCharts(el2, {
+      series: [{ name, data: lineData.map(p => [p.x, p.y]) }],
+      chart: { type: 'area', height: 160, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
+      theme: { mode: 'dark' },
+      dataLabels: { enabled: false },
+      colors: [lineColor],
+      stroke: { curve: 'smooth', width: 1.5 },
+      fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.25, opacityTo: 0.02 } },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { labels: { formatter: v => v.toFixed(2) + '%', style: { colors: '#6888b0', fontSize: '10px' } }, tickAmount: 4 },
+      grid: { borderColor: '#1a2744', strokeDashArray: 3, padding: { left: 4, right: 4 } },
       tooltip: { theme: 'dark', x: { format: 'MMM yyyy' }, y: { formatter: v => v.toFixed(3) + '%' } },
-      annotations: { yaxis: [
-        { y: mean, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4,
-          label: { text: meanLabel, style: { color: '#6888b0', background: 'transparent', fontSize: '9px', padding: {left:2,right:2,top:0,bottom:0} } } },
-      ]},
-    });
+      annotations: mean != null ? { yaxis: [{
+        y: mean, borderColor: '#4a5e80', borderWidth: 1, strokeDashArray: 4,
+        label: { text: meanLabel, style: { color: '#6888b0', background: 'transparent', fontSize: '9px', padding: { left:2, right:2, top:0, bottom:0 } } },
+      }] } : {},
+    }).render();
   }
 
   // ── Buffett indicator ─────────────────────────
