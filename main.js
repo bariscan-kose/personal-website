@@ -103,7 +103,7 @@ function highlightNav() {
     const na = s2a(sc), [tx,ty] = pol(R-10,na), [lx,ly] = pol(10,na+90), [rx,ry] = pol(10,na-90);
     out += `<polygon points="${p(tx)},${p(ty)} ${p(lx)},${p(ly)} ${p(rx)},${p(ry)}" fill="#f1f5f9" filter="url(#gns)"/>`;
     out += `<circle cx="${cx}" cy="${cy}" r="8" fill="#080d14" stroke="#4a5e80" stroke-width="2"/>`;
-    return `<svg viewBox="0 0 310 160" width="100%">${out}</svg>`;
+    return `<svg viewBox="0 0 310 155" width="100%">${out}</svg>`;
   }
 
   // ── F&G history chart ─────────────────────────

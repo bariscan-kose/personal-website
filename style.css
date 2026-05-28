@@ -907,7 +907,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 24px;
-  align-items: start;
+  align-items: center;
   margin-bottom: 16px;
 }
 
