@@ -126,7 +126,7 @@ function highlightNav() {
           colorStops: [
             { offset: 0,   color: '#22c55e', opacity: 0.75 },
             { offset: 50,  color: '#4a5e80', opacity: 0.2  },
-            { offset: 100, color: '#ef4444', opacity: 0.75 },
+            { offset: 100, color: '#ef4444', opacity: 0.50 },
           ],
         },
       },
