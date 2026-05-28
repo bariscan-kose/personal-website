@@ -107,7 +107,6 @@ const roles = [
   'Machine Learning Engineer',
   'Embedded Systems Developer',
   'Full-Stack Engineer',
-  'Data Scientist',
 ];
 let roleIdx = 0, charIdx = 0, deleting = false;
 const roleEl = document.getElementById('roleText');
