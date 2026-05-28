@@ -112,31 +112,12 @@ function highlightNav() {
     if (!el2 || !history?.length) return;
     const pts = history.filter(pt => pt.v != null && isFinite(pt.v));
     if (!pts.length) return;
-    // Build green/red series that share an exact crossing point at v=50 so the
-    // two areas meet seamlessly instead of leaving a gap at each transition.
-    const greenData = [], redData = [];
-    for (let i = 0; i < pts.length; i++) {
-      const t = +pts[i].t, v = +pts[i].v;
-      if (i > 0) {
-        const pt = +pts[i - 1].v, pT = +pts[i - 1].t;
-        if ((pt - 50) * (v - 50) < 0) {
-          const tc = pT + (t - pT) * (50 - pt) / (v - pt);
-          greenData.push([tc, 50]);
-          redData.push([tc, 50]);
-        }
-      }
-      greenData.push([t, v >= 50 ? v : null]);
-      redData.push([t, v <  50 ? v : null]);
-    }
     new ApexCharts(el2, {
-      series: [
-        { name: 'Greed', data: greenData },
-        { name: 'Fear',  data: redData },
-      ],
+      series: [{ name: 'Fear & Greed', data: pts.map(pt => [+pt.t, +pt.v]) }],
       chart: { type: 'area', height: 170, toolbar: { show: false }, animations: { enabled: false }, background: 'transparent' },
       theme: { mode: 'dark' },
       dataLabels: { enabled: false },
-      colors: ['#22c55e', '#ef4444'],
+      colors: [hex],
       stroke: { curve: 'smooth', width: 1.5 },
       fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.75, opacityTo: 0.15 } },
       legend: { show: false },
