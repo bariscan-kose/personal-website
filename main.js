@@ -119,7 +119,17 @@ function highlightNav() {
       dataLabels: { enabled: false },
       colors: [hex],
       stroke: { curve: 'smooth', width: 1.5 },
-      fill: { type: 'gradient', gradient: { shade: 'dark', opacityFrom: 0.75, opacityTo: 0.15 } },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          type: 'vertical',
+          colorStops: [
+            { offset: 0,   color: '#22c55e', opacity: 0.75 },
+            { offset: 50,  color: '#4a5e80', opacity: 0.2  },
+            { offset: 100, color: '#ef4444', opacity: 0.75 },
+          ],
+        },
+      },
       legend: { show: false },
       xaxis: { type: 'datetime', labels: { style: { colors: '#6888b0', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
       yaxis: { min: 0, max: 100, show: false },
