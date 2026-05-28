@@ -134,8 +134,8 @@ function highlightNav() {
         gradient: {
           shade: 'dark',
           type: 'vertical',
-          opacityFrom: 0.35,
-          opacityTo: 0.04,
+          opacityFrom: 0.75,
+          opacityTo: 0.15,
           stops: [0, 100],
         },
       },
