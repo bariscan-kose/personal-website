@@ -46,8 +46,9 @@ function highlightNav() {
    MARKET WIDGET
    Renders F&G index + S&P 500 yield chart
    using data from finance.bariscankose.com/api/snapshot
+   Loads lazily — only fetches when the section enters the viewport.
 ═══════════════════════════════════════════════ */
-(async () => {
+async function _loadMarketWidget() {
   const el = document.getElementById('marketSnapshot');
   if (!el) return;
 
@@ -412,6 +413,19 @@ function highlightNav() {
   } catch {
     el.innerHTML = '<div class="snap-loading">Market data temporarily unavailable.</div>';
   }
+}
+
+// Only fetch market data when the section scrolls into view
+(function() {
+  const section = document.getElementById('markets');
+  if (!section) return;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      obs.disconnect();
+      _loadMarketWidget();
+    }
+  }, { rootMargin: '300px' });
+  obs.observe(section);
 })();
 
 /* ═══════════════════════════════════════════════
@@ -538,7 +552,11 @@ typeRole();
     }
   }
 
+  let heroVisible = true;
+  let heroRafId = null;
+
   function loop() {
+    if (!heroVisible) { heroRafId = null; return; }
     tick++;
 
     // Lazy cursor follow
@@ -551,8 +569,13 @@ typeRole();
     particles.forEach(p => { p.update(tick); p.draw(tick); });
     drawConnections();
 
-    requestAnimationFrame(loop);
+    heroRafId = requestAnimationFrame(loop);
   }
+
+  new IntersectionObserver(entries => {
+    heroVisible = entries[0].isIntersecting;
+    if (heroVisible && !heroRafId) heroRafId = requestAnimationFrame(loop);
+  }, { threshold: 0 }).observe(canvas);
 
   window.addEventListener('resize', resize);
 
@@ -803,6 +826,9 @@ typeRole();
     }
   }
 
+  let art1Visible = false;
+  let art1RafId = null;
+
   function init() {
     resize();
     pts.length = 0;
@@ -812,6 +838,7 @@ typeRole();
   }
 
   function loop() {
+    if (!art1Visible) { art1RafId = null; return; }
     ctx.fillStyle = 'rgba(0,0,0,0.06)';
     ctx.fillRect(0, 0, W, H);
     const time = t * 0.003;
@@ -821,8 +848,13 @@ typeRole();
       p.draw(px, py);
     });
     t++;
-    requestAnimationFrame(loop);
+    art1RafId = requestAnimationFrame(loop);
   }
+
+  new IntersectionObserver(entries => {
+    art1Visible = entries[0].isIntersecting;
+    if (art1Visible && !art1RafId) art1RafId = requestAnimationFrame(loop);
+  }, { threshold: 0 }).observe(canvas);
 
   canvas.addEventListener('mousemove', e => {
     const rect = canvas.getBoundingClientRect();
@@ -876,6 +908,9 @@ typeRole();
     };
   }
 
+  let art2Visible = false;
+  let art2RafId = null;
+
   function init() {
     resize();
     ctx.fillStyle = '#000';
@@ -883,6 +918,7 @@ typeRole();
   }
 
   function loop() {
+    if (!art2Visible) { art2RafId = null; return; }
     const dx = sigma * (y - x) * dt;
     const dy = (x * (rho - z) - y) * dt;
     const dz = (x * y - beta * z) * dt;
@@ -908,13 +944,17 @@ typeRole();
     }
 
     t++;
-    requestAnimationFrame(loop);
+    art2RafId = requestAnimationFrame(loop);
   }
+
+  new IntersectionObserver(entries => {
+    art2Visible = entries[0].isIntersecting;
+    if (art2Visible && !art2RafId) art2RafId = requestAnimationFrame(loop);
+  }, { threshold: 0 }).observe(canvas);
 
   const resObs = new ResizeObserver(init);
   resObs.observe(canvas.parentElement);
   init();
-  loop();
 })();
 
 /* ═══════════════════════════════════════════════
@@ -937,7 +977,11 @@ typeRole();
     { x: 0.5,  y: 0.2  },
   ];
 
+  let art3Visible = false;
+  let art3RafId = null;
+
   function loop() {
+    if (!art3Visible) { art3RafId = null; return; }
     const data = imageData.data;
     const time = t * 0.025;
     for (let py = 0; py < H; py++) {
@@ -962,13 +1006,17 @@ typeRole();
     }
     ctx.putImageData(imageData, 0, 0);
     t++;
-    requestAnimationFrame(loop);
+    art3RafId = requestAnimationFrame(loop);
   }
+
+  new IntersectionObserver(entries => {
+    art3Visible = entries[0].isIntersecting;
+    if (art3Visible && !art3RafId) art3RafId = requestAnimationFrame(loop);
+  }, { threshold: 0 }).observe(canvas);
 
   const resObs = new ResizeObserver(resize);
   resObs.observe(canvas.parentElement);
   resize();
-  loop();
 })();
 
 /* ═══════════════════════════════════════════════
