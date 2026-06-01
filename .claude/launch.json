@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "personal-website",
+      "runtimeExecutable": "/opt/homebrew/bin/python3",
+      "runtimeArgs": ["-m", "http.server", "3456", "--directory", "/Users/bariscankose/Documents/00-code/claude-projects/personal-website"],
+      "port": 3456,
+      "autoPort": false
+    }
+  ]
+}

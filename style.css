@@ -305,24 +305,23 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   gap: 6px;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   color: var(--cyan);
   padding: 5px 13px;
   border-radius: 7px;
-  background: linear-gradient(var(--bg-dark), var(--bg-dark)) padding-box,
-              linear-gradient(135deg, var(--cyan), var(--purple)) border-box;
-  border: 1px solid transparent;
+  border: 1px solid rgba(0,212,255,0.45);
+  background: rgba(0,212,255,0.06);
   white-space: nowrap;
   flex-shrink: 0;
-  transition: color var(--trans), background var(--trans), box-shadow var(--trans);
+  transition: color var(--trans), border-color var(--trans), background var(--trans), box-shadow var(--trans);
 }
 
 .nav-markets-btn:hover {
   color: #fff;
-  background: linear-gradient(rgba(0,212,255,0.08), rgba(0,212,255,0.08)) padding-box,
-              linear-gradient(135deg, var(--cyan), var(--purple)) border-box;
-  box-shadow: 0 0 18px rgba(0,212,255,0.18);
+  border-color: var(--cyan);
+  background: rgba(0,212,255,0.12);
+  box-shadow: 0 0 20px rgba(0,212,255,0.25), inset 0 0 12px rgba(0,212,255,0.05);
 }
 
 /* ── Hamburger ── */
