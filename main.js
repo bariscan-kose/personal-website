@@ -975,6 +975,7 @@ typeRole();
    QUOTES CAROUSEL
 ═══════════════════════════════════════════════ */
 const quotes = [
+  { text: "Fire trucks are actually water trucks.", author: "Unknown", cat: "Sometimes things are opposite of what they seem to be." },
   { text: "Verba volant, scripta manent.", author: "Latin Proverb", cat: "Speech goes away, writing is permanent." },
   { text: "Knowledge isn't power until it's applied.", author: "Dale Carnegie", cat: "Self-Development" },
   { text: "The only rules that really matter are these: what a man can do and what a man can't do.", author: "Captain Jack Sparrow", cat: "Pirates of the Caribbean" },
