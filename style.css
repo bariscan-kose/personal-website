@@ -1732,8 +1732,29 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 /* ═══════════════════════════════════════════════
    CONTACT
 ═══════════════════════════════════════════════ */
+/* ── Contact section — geometry-is-art background ── */
+#contact {
+  background-image:
+    linear-gradient(to bottom,
+      rgba(5,10,20,0.78) 0%,
+      rgba(5,10,20,0.62) 40%,
+      rgba(5,10,20,0.78) 100%),
+    url('gallery/geometry-is-art.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Hide the generic ::before separator — the image already creates a break */
+#contact::before { display: none; }
+
+/* Hide the generic ::after ambient glow — the image provides its own depth */
+#contact::after { display: none; }
+
 .contact-container {
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .contact-links {
@@ -1750,7 +1771,10 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   gap: 12px;
   padding: 16px 32px;
   border-radius: var(--radius);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(5,10,20,0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   color: var(--text-muted);
   font-size: 0.95rem;
   transition: all var(--trans);
@@ -1760,9 +1784,9 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 
 .contact-link:hover {
-  border-color: var(--border-h);
+  border-color: rgba(0,212,255,0.4);
   color: var(--cyan);
-  background: var(--cyan-dim);
+  background: rgba(0,212,255,0.08);
   box-shadow: var(--shadow-glow);
   transform: translateY(-2px);
 }
